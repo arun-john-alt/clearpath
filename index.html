@@ -1,0 +1,1651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#173f32">
+  <meta name="color-scheme" content="light">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-gyCTXzU+tAE3ICM7mejxhaYpMVSpAn5YrSxTd54RcO8=' 'sha256-49TTD58S8ZcaCfclE4urkMoBoU0jotVGNb1WC16LYY4=' 'sha256-m7tDLXufr2jb0ODBVGm9dYlXS1Tcj8FWOW1huWPIDTQ='; style-src 'unsafe-inline'; img-src data:; connect-src 'none'; base-uri 'none'; object-src 'none'; form-action 'none'">
+  <meta name="description" content="Clearpath is a private, on-device view of your cash flow, commitments, and debt plan.">
+  <title>Clearpath · Your money, with a plan</title>
+  <style>
+:root {
+  color-scheme: light;
+  --paper: #f6f5ef;
+  --surface: #fffefa;
+  --surface-soft: #eeefe6;
+  --forest: #173f32;
+  --forest-hover: #24553f;
+  --lime: #d9ef9a;
+  --lime-soft: #eef5dc;
+  --ink: #263b30;
+  --muted: #6e796e;
+  --line: #e1e5da;
+  --good: #28714a;
+  --warning: #936325;
+  --danger: #b3433d;
+  --chart-primary: #285e43;
+  --chart-secondary: #a0b778;
+  --chart-tertiary: #d5b37a;
+  --radius: 20px;
+  --page-width: 1120px;
+  --nav-height: 76px;
+  --shadow: 0 4px 22px rgb(33 54 37 / 3%);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+* { box-sizing: border-box; }
+html { min-width: 320px; scroll-behavior: smooth; background: var(--paper); }
+body { margin: 0; color: var(--ink); background: var(--paper); font-size: 14px; line-height: 1.5; }
+body:has(dialog[open]) { overflow: hidden; }
+button, input, select, textarea { font: inherit; }
+button { color: inherit; cursor: pointer; }
+button, input, select, textarea, a { -webkit-tap-highlight-color: transparent; }
+button { min-height: 44px; border: 0; background: transparent; }
+button:disabled, input:disabled, select:disabled { cursor: not-allowed; opacity: .55; }
+a { color: var(--forest); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a:hover { text-decoration: none; }
+:focus-visible { outline: 3px solid #86a36d; outline-offset: 3px; }
+[hidden] { display: none !important; }
+svg { flex-shrink: 0; }
+img { max-width: 100%; }
+h1, h2, h3, h4, p { margin-top: 0; }
+h1, h2, h3, h4 { font-weight: 650; color: var(--forest); }
+h1 { margin-bottom: 8px; font-size: clamp(28px, 3.2vw, 38px); line-height: 1.15; letter-spacing: -.045em; }
+h2 { margin-bottom: 12px; font-size: 21px; line-height: 1.25; letter-spacing: -.025em; }
+h3 { margin-bottom: 8px; font-size: 16px; line-height: 1.35; letter-spacing: -.015em; }
+h4 { margin-bottom: 6px; font-size: 14px; line-height: 1.4; }
+p { margin-bottom: 14px; }
+p:last-child { margin-bottom: 0; }
+strong { font-weight: 650; }
+small { font-size: 12px; }
+::selection { color: var(--forest); background: var(--lime); }
+
+.app-shell { min-height: 100vh; min-height: 100dvh; }
+.app-header { background: rgb(255 254 250 / 94%); border-bottom: 1px solid var(--line); }
+.header-inner { width: min(100%, var(--page-width)); min-height: 82px; margin: 0 auto; padding: 14px 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.brand { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; color: var(--forest); text-decoration: none; flex-shrink: 0; }
+.brand-mark { color: var(--forest); }
+.brand-name { font-size: 23px; font-weight: 730; letter-spacing: -.055em; line-height: 1; }
+.brand-period { color: #8ca958; }
+.header-actions { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.save-status { display: inline-flex; align-items: center; gap: 7px; margin-right: 7px; color: var(--muted); font-size: 12px; }
+.save-status::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: #749364; flex-shrink: 0; }
+.header-action { background: transparent; }
+.app-main { width: min(100%, var(--page-width)); margin: 0 auto; padding: 34px 28px calc(var(--nav-height) + 58px + env(safe-area-inset-bottom)); outline: none; }
+#content { min-width: 0; }
+.skip-link { position: fixed; top: 10px; left: 16px; z-index: 100; padding: 12px 16px; color: var(--surface); background: var(--forest); border-radius: 10px; transform: translateY(-150%); }
+.skip-link:focus { transform: translateY(0); }
+.loading-state { min-height: 360px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; color: var(--muted); }
+.loading-mark { width: 36px; height: 36px; border: 4px solid var(--line); border-top-color: var(--forest); border-radius: 50%; animation: loading 1s linear infinite; }
+@keyframes loading { to { transform: rotate(360deg); } }
+
+.page-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; margin-bottom: 25px; }
+.page-head > :first-child { min-width: 0; }
+.page-head p { max-width: 620px; }
+.page-head .eyebrow { margin-bottom: 8px; }
+.eyebrow { margin: 0 0 8px; color: var(--muted); font-size: 11px; font-weight: 650; letter-spacing: .12em; line-height: 1.4; text-transform: uppercase; }
+.muted { color: var(--muted); }
+.small { font-size: 12px; line-height: 1.5; }
+.nowrap { white-space: nowrap; }
+.metric-label { color: var(--muted); font-size: 12px; font-weight: 500; }
+.screen-reader-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
+.button, .icon-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; border: 1px solid transparent; border-radius: 12px; font-weight: 600; text-decoration: none; transition: background .16s, border-color .16s, box-shadow .16s, transform .16s; }
+.button { padding: 11px 16px; font-size: 13px; line-height: 1.4; text-align: center; }
+.button svg, .icon-button svg { width: 19px; height: 19px; flex-shrink: 0; }
+.button:active, .icon-button:active { transform: translateY(1px); }
+.icon-button { width: 44px; height: 44px; flex-shrink: 0; padding: 10px; color: var(--forest); background: var(--surface); border-color: var(--line); }
+.icon-button:hover { background: var(--surface-soft); border-color: #cbd6c3; }
+.primary { color: var(--surface); background: var(--forest); }
+.primary:hover { color: var(--surface); background: var(--forest-hover); }
+.secondary { color: var(--forest); background: var(--surface); border-color: var(--line); }
+.secondary:hover { background: #f0f3e9; border-color: #c4d2b9; }
+.ghost { color: var(--forest); background: transparent; border-color: transparent; }
+.ghost:hover { background: #e9eee2; }
+.danger { color: var(--danger); }
+.button.danger { color: var(--danger); background: #fff0eb; border-color: #f0cec5; }
+.button.danger:hover { background: #f9e2da; border-color: #e3b2a6; }
+.button:disabled:hover, .icon-button:disabled:hover { transform: none; }
+.inline-actions, .hero-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.inline-actions { flex-shrink: 0; }
+.form-actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+
+.hero { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 28px; margin-bottom: 23px; padding: 30px; color: #f6f8ef; background: var(--forest); border-radius: 24px; box-shadow: 0 12px 26px rgb(23 63 50 / 7%); overflow: hidden; }
+.hero-main { min-width: 0; }
+.hero h1, .hero h2, .hero h3, .hero h4 { color: #f6f8ef; }
+.hero .eyebrow, .hero .muted, .hero .metric-label { color: #bfd0b9; }
+.hero-value { margin: 8px 0 10px; color: #f7f9ef; font-size: clamp(36px, 5vw, 54px); font-weight: 550; font-variant-numeric: tabular-nums; line-height: 1.08; letter-spacing: -.055em; overflow-wrap: anywhere; }
+.hero-value small, .hero-value .small { font-size: 18px; font-weight: 400; letter-spacing: -.02em; }
+.hero-aside { min-width: 220px; max-width: 310px; display: flex; flex-direction: column; justify-content: center; gap: 15px; padding-left: 28px; border-left: 1px solid rgb(234 245 218 / 19%); }
+.hero-aside .row { align-items: flex-start; }
+.hero-aside .row-value, .hero-aside .stat-value { color: #f7f9ef; }
+.hero .hero-actions { margin-top: 22px; }
+.hero .primary { color: var(--forest); background: var(--lime); }
+.hero .primary:hover { background: #e5f6ba; }
+.hero .secondary, .hero .ghost { color: #f2f7e7; background: transparent; border-color: rgb(221 237 204 / 35%); }
+.hero .secondary:hover, .hero .ghost:hover { background: rgb(231 243 210 / 10%); border-color: rgb(221 237 204 / 60%); }
+.hero :focus-visible { outline-color: var(--lime); }
+.hero .tag, .hero .pill { color: var(--lime); background: rgb(223 240 194 / 10%); border-color: rgb(223 240 194 / 18%); }
+.hero .progress { background: rgb(232 243 219 / 16%); }
+.hero .progress-fill { background: var(--lime); }
+
+.grid-2, .grid-3, .grid-4, .kpi-grid { display: grid; gap: 18px; min-width: 0; }
+.grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.grid-4, .kpi-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.kpi-grid { margin-bottom: 24px; }
+.grid-2 > *, .grid-3 > *, .grid-4 > *, .kpi-grid > * { min-width: 0; }
+.card { min-width: 0; padding: 23px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+.card + .card { margin-top: 20px; }
+.grid-2 > .card + .card, .grid-3 > .card + .card, .grid-4 > .card + .card, .kpi-grid > .card + .card { margin-top: 0; }
+.card-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 18px; }
+.card-head > div { min-width: 0; }
+.card-head h2, .card-head h3, .card-head p { margin-bottom: 0; }
+.card-head h2 + p, .card-head h3 + p { margin-top: 4px; }
+.section-title { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin: 28px 0 16px; }
+.section-title h2, .section-title h3 { margin: 0; }
+.section-title:first-child { margin-top: 0; }
+.stat { min-width: 0; padding: 20px; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); }
+.stat-value { display: block; margin: 8px 0 5px; color: var(--forest); font-size: clamp(23px, 2.7vw, 30px); font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.18; letter-spacing: -.04em; overflow-wrap: anywhere; }
+.stat-value .small, .stat-value small { font-size: 13px; font-weight: 400; letter-spacing: 0; }
+.stat .small { margin-bottom: 0; }
+.card .stat { padding: 0; background: transparent; border: 0; border-radius: 0; box-shadow: none; }
+.row { display: flex; align-items: center; justify-content: space-between; gap: 14px; min-width: 0; }
+.list-row { display: flex; align-items: center; gap: 14px; padding: 15px 0; border-bottom: 1px solid var(--line); min-width: 0; }
+.list-row:first-child { padding-top: 0; }
+.list-row:last-child { padding-bottom: 0; border-bottom: 0; }
+.row-main { flex: 1; min-width: 0; }
+.row-main > strong { display: block; margin-bottom: 3px; font-size: 14px; font-weight: 600; overflow-wrap: anywhere; }
+.row-main > p { margin: 3px 0 0; }
+.row-main > .muted, .row-main > .small { overflow-wrap: anywhere; }
+.row-value { flex-shrink: 0; color: var(--forest); text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+.row-value > .muted, .row-value > .small { display: block; font-weight: 400; }
+.row-value > .tag { margin-top: 5px; }
+.tag, .pill, .badge { display: inline-flex; align-items: center; justify-content: center; gap: 5px; max-width: 100%; border-radius: 999px; font-size: 11px; font-weight: 600; line-height: 1.35; vertical-align: middle; }
+.tag { padding: 5px 8px; color: #62735d; background: #edf1e8; }
+.tag.good { color: #276141; background: #e8f2e0; }
+.tag.warn { color: #805a1f; background: #fff0cc; }
+.tag.bad { color: #a24439; background: #fce8df; }
+.pill { padding: 6px 10px; color: var(--forest); background: var(--lime-soft); border: 1px solid #d9e3c8; font-size: 12px; font-weight: 500; }
+.badge { padding: 5px 9px; color: var(--forest); background: var(--lime); }
+.notice { margin: 14px 0; padding: 13px 15px; color: #4f6547; background: #edf3e4; border: 1px solid #dae5cf; border-radius: 13px; font-size: 13px; line-height: 1.55; overflow-wrap: anywhere; }
+.notice:first-child { margin-top: 0; }
+.notice:last-child { margin-bottom: 0; }
+.notice.warn { color: #805e2b; background: #fff5df; border-color: #ecd9b0; }
+.notice.bad { color: #9c4038; background: #fdefe8; border-color: #edcfc3; }
+.notice.good { color: #316546; background: #eaf3e3; border-color: #d1e4c7; }
+.notice strong { color: inherit; }
+.empty { display: flex; min-height: 180px; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 30px 20px; color: var(--muted); text-align: center; }
+.empty h2, .empty h3, .empty p { max-width: 420px; margin-bottom: 0; }
+.empty .button { margin-top: 8px; }
+.divider { display: block; height: 1px; margin: 22px 0; background: var(--line); border: 0; }
+
+.field { display: block; min-width: 0; margin: 0 0 16px; }
+.field > label, .field > span:first-child { display: block; margin-bottom: 7px; color: var(--ink); font-size: 12px; font-weight: 600; }
+.field input, .field select, .field textarea, input.form-input, select.form-input, textarea.form-input { display: block; width: 100%; min-width: 0; min-height: 46px; padding: 11px 12px; color: var(--ink); background: var(--surface); border: 1px solid #d7dfd0; border-radius: 11px; font-size: 14px; line-height: 1.5; box-shadow: 0 1px 2px rgb(31 55 35 / 2%); }
+.field input::placeholder, .field textarea::placeholder { color: #8a9486; }
+.field input:focus, .field select:focus, .field textarea:focus { outline: 2px solid #b1c997; outline-offset: 1px; border-color: #799966; }
+.field input[readonly] { color: var(--muted); background: #f1f2eb; }
+.field textarea { min-height: 95px; resize: vertical; }
+.field select { padding-right: 30px; }
+.field input[type="number"] { font-variant-numeric: tabular-nums; }
+.field input[type="date"], .field input[type="month"] { min-width: 0; text-align: left; }
+.field small, .field > .small { display: block; margin-top: 6px; color: var(--muted); font-size: 12px; font-weight: 400; }
+.field-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-bottom: 16px; }
+.field-grid > .field { margin: 0; }
+.check-field { display: flex; align-items: flex-start; gap: 10px; min-height: 46px; margin: 0 0 12px; padding: 12px 13px; border: 1px solid var(--line); border-radius: 12px; background: #f7f8f2; cursor: pointer; }
+.check-field input, .field input[type="checkbox"] { width: 18px; height: 18px; min-height: 18px; flex-shrink: 0; margin: 2px 0 0; padding: 0; accent-color: var(--forest); }
+.check-field > span { min-width: 0; }
+.check-field strong { display: block; font-size: 13px; font-weight: 600; }
+.check-field .small { display: block; margin-top: 3px; }
+.settings-section + .settings-section { margin-top: 26px; padding-top: 26px; border-top: 1px solid var(--line); }
+.settings-section > h2, .settings-section > h3 { margin-bottom: 6px; }
+.settings-section > .muted { margin-bottom: 20px; }
+.import-panel { padding: 20px; color: var(--muted); background: #f3f5eb; border: 1px dashed #becbb0; border-radius: 15px; }
+.import-panel .inline-actions { margin-top: 14px; }
+
+.toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
+.toolbar .field { margin: 0; }
+.toolbar input, .toolbar select { min-height: 44px; }
+.segmented, .tabs { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 3px; max-width: 100%; padding: 4px; background: #eaece2; border: 1px solid #e0e5d8; border-radius: 13px; }
+.segmented button, .tabs button, .tabs a { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 10px 15px; color: #65715e; background: transparent; border: 0; border-radius: 9px; font-size: 12px; font-weight: 600; line-height: 1.35; text-decoration: none; transition: background .16s, color .16s; }
+.segmented button:hover, .tabs button:hover, .tabs a:hover { color: var(--forest); background: #f6f7f0; }
+.segmented .active, .segmented .selected, .segmented [aria-pressed="true"], .segmented [aria-selected="true"], .tabs .active, .tabs [aria-selected="true"], .tabs [aria-current="page"] { color: var(--surface); background: var(--forest); box-shadow: 0 2px 4px rgb(18 50 32 / 8%); }
+.segmented .active:hover, .segmented [aria-pressed="true"]:hover, .tabs .active:hover, .tabs [aria-selected="true"]:hover { color: var(--surface); background: var(--forest); }
+
+.chart { min-width: 0; width: 100%; margin: 16px 0 0; }
+.chart svg { display: block; width: 100%; max-width: 100%; height: auto; overflow: visible; }
+.chart svg text { font-family: inherit; }
+.chart-legend { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 18px; margin-top: 14px; color: var(--muted); font-size: 12px; }
+.chart-legend > span { display: inline-flex; align-items: center; gap: 6px; }
+.chart-legend i, .chart-legend .swatch { display: inline-block; width: 8px; height: 8px; background: var(--chart-primary); border-radius: 2px; }
+.sparkline { width: 140px; max-width: 100%; height: 46px; }
+.progress { width: 100%; height: 7px; overflow: hidden; background: #e8eddf; border-radius: 20px; }
+.progress-fill { width: 0; height: 100%; background: var(--forest); border-radius: inherit; transition: width .3s ease; }
+.amount-income { color: #27714b; font-variant-numeric: tabular-nums; }
+.amount-expense { color: #a25242; font-variant-numeric: tabular-nums; }
+.table-wrap { max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: #c8d1bf transparent; }
+table { width: 100%; border-collapse: collapse; text-align: left; font-size: 12px; font-variant-numeric: tabular-nums; }
+thead { border-bottom: 1px solid #dce3d3; }
+th { padding: 10px 10px 12px; color: var(--muted); font-size: 11px; font-weight: 600; letter-spacing: .055em; text-transform: uppercase; white-space: nowrap; }
+td { padding: 13px 10px; border-bottom: 1px solid #edf0e6; vertical-align: middle; }
+th:first-child, td:first-child { padding-left: 0; }
+th:last-child, td:last-child { padding-right: 0; }
+tbody tr:last-child td { border-bottom: 0; }
+tbody tr:hover { background: #f8faf2; }
+td:not(:first-child) { white-space: nowrap; }
+td .tag { font-size: 11px; }
+td .button { font-size: 12px; }
+
+.goal-card { background: #eef3df; border-color: #d7e0c5; }
+.goal-card .eyebrow { color: #71845c; }
+.goal-card .progress { background: #dce5ca; }
+.timeline { margin: 16px 0 0; }
+.step { position: relative; display: grid; grid-template-columns: 22px minmax(0, 1fr); column-gap: 13px; padding-bottom: 22px; }
+.step:last-child { padding-bottom: 0; }
+.step:not(:last-child)::before { content: ""; position: absolute; left: 10px; top: 22px; bottom: 0; width: 1px; background: #d5dfc9; }
+.dot { position: relative; z-index: 1; display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; color: var(--forest); background: var(--lime); border-radius: 50%; font-size: 11px; font-weight: 650; }
+.dot:empty { width: 10px; height: 10px; margin: 6px; background: var(--forest); }
+.step h3, .step h4 { margin-bottom: 4px; }
+.step p { margin-bottom: 0; }
+
+/* View-specific details. */
+.month-picker { display: block; flex-shrink: 0; margin-top: 20px; }
+.month-picker input { display: block; width: 172px; min-width: 0; min-height: 44px; padding: 10px 12px; color: var(--forest); background: var(--surface); border: 1px solid var(--line); border-radius: 12px; font-size: 13px; font-weight: 600; }
+.hero-caption { max-width: 450px; margin: 0; color: #d9e4cf; font-size: 14px; }
+.hero-footnote { max-width: 440px; margin: 16px 0 0; color: #b9ccb0; font-size: 11px; }
+.hero-metric { display: flex; align-items: baseline; justify-content: space-between; gap: 15px; }
+.hero-metric > span { color: #c0d1b7; font-size: 12px; }
+.hero-metric > strong { color: #f4f8e9; font-size: 16px; font-weight: 550; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.hero-aside > .small { color: #bfd0b9; margin: -7px 0 0; }
+.allocation-bar { width: 100%; height: 6px; overflow: hidden; background: rgb(230 244 209 / 16%); border-radius: 10px; }
+.allocation-bar > i { display: block; max-width: 100%; height: 100%; background: var(--lime); border-radius: inherit; }
+.hero-symbol { display: inline-flex; align-items: center; justify-content: center; width: 62px; height: 62px; color: var(--forest); background: var(--lime); border-radius: 18px; }
+.hero-symbol svg { width: 32px; height: 32px; }
+.onboarding .hero-main > p:not(.eyebrow) { max-width: 440px; color: #d3dfc8; font-size: 15px; }
+.onboarding h1 { margin-top: 12px; font-size: 45px; letter-spacing: -.05em; }
+.onboarding .hero-aside { gap: 16px; }
+.onboarding .hero-aside h2 { margin: 0; font-size: 22px; }
+.onboarding .hero-aside p { color: #c0d1b7; font-size: 13px; }
+.intro-grid { margin-top: 22px; }
+.intro-grid .card { padding: 27px; }
+.intro-grid .eyebrow { margin-bottom: 25px; color: #819469; }
+.intro-grid h2 { font-size: 21px; }
+.grid-3.kpi-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.stat > .button.ghost { margin: 4px 0 -6px -9px; padding: 8px 9px; font-size: 12px; }
+.grid-2 + .card { margin-top: 22px; }
+.goal-strip { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-top: 23px; padding: 25px; background: #edf2df; border-color: #d9e2c9; }
+.goal-strip > div { min-width: 0; }
+.goal-strip h2 { margin-bottom: 7px; font-size: 21px; }
+.goal-strip .button { flex-shrink: 0; }
+.section-title > p { flex: 1; min-width: 190px; margin: 0; }
+.chart-grid { fill: none; stroke: #e4e9dd; stroke-width: 1; vector-effect: non-scaling-stroke; }
+.chart-label { fill: #76806e; font-size: 12px; font-weight: 400; }
+.chart-zero { fill: none; stroke: #bccbb0; stroke-width: 1; vector-effect: non-scaling-stroke; }
+.chart-area { fill: #517548; fill-opacity: .08; }
+.chart-floor { fill: none; stroke: #94a879; stroke-width: 1.4; stroke-dasharray: 4 4; vector-effect: non-scaling-stroke; }
+.chart-line { fill: none; stroke: var(--forest); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.chart-point { fill: var(--forest); stroke: var(--surface); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.chart-point.negative { fill: #b9714d; }
+.chart-legend .legend-dot { width: 7px; height: 7px; background: var(--forest); border-radius: 50%; }
+.chart-legend .legend-line { width: 18px; height: 0; background: transparent; border-top: 2px dashed #94a879; border-radius: 0; }
+.chart-insight { margin-top: 17px; padding-top: 16px; border-top: 1px solid var(--line); }
+.chart-insight > strong { display: block; font-size: 13px; font-weight: 600; }
+.chart-insight p { margin: 5px 0 0; color: var(--muted); }
+.warn-text { color: #926039; }
+.date-tile { display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; width: 41px; min-height: 47px; padding: 5px 3px; color: var(--forest); background: #eff2e6; border-radius: 10px; }
+.date-tile b { font-size: 16px; font-weight: 600; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.date-tile small { margin-top: 3px; color: #7a8969; font-size: 11px; line-height: 1.2; letter-spacing: .03em; text-transform: uppercase; }
+.text-link { display: block; min-height: 44px; margin: 0 0 -8px auto; padding: 7px 0; color: #517044; background: transparent; font-size: 11px; font-weight: 500; text-align: right; text-decoration: underline; text-decoration-color: #becbad; text-underline-offset: 3px; }
+.text-link:hover { color: var(--forest); text-decoration-color: var(--forest); }
+.entry-icon { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 40px; height: 40px; color: #92774c; background: #f2ebdc; border-radius: 12px; }
+.entry-icon.income { color: #53723f; background: #edf3df; }
+.entry-icon svg { width: 19px; height: 19px; }
+.button svg, .icon-button svg, .entry-icon svg, .hero-symbol svg, .card-head > svg { fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.card-head > svg { width: 28px; height: 28px; color: #719052; }
+.activity-summary { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 7px 16px; padding: 13px 0; margin: 0 0 14px; color: var(--muted); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); font-size: 12px; font-variant-numeric: tabular-nums; }
+.search-field { display: block; min-width: 0; }
+.search-field input { display: block; width: 220px; min-width: 0; min-height: 44px; padding: 10px 13px; color: var(--ink); background: #f8f9f2; border: 1px solid var(--line); border-radius: 11px; font-size: 13px; }
+.search-field input::placeholder { color: #8a9581; }
+.tabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); width: 100%; margin-bottom: 21px; }
+.tabs button { min-width: 0; padding-inline: 12px; }
+.plan-note { margin: 0 0 0 54px; padding-bottom: 15px; border-bottom: 1px solid var(--line); }
+.list-row:has(+ .plan-note) { padding-bottom: 5px; border-bottom: 0; }
+.plan-note:last-child { padding-bottom: 0; border-bottom: 0; }
+.tag-row { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+.tag-row:empty { display: none; }
+.disabled-row .row-main > strong, .disabled-row .row-value > strong { color: #7b8572; }
+.loan-grid { margin-top: 21px; margin-bottom: 22px; }
+.loan-card { display: flex; flex-direction: column; }
+.loan-card .card-head { margin-bottom: 21px; }
+.loan-card .card-head h2 { font-size: 20px; overflow-wrap: anywhere; }
+.loan-value { margin: 0 0 20px; color: var(--forest); font-size: 34px; font-weight: 550; line-height: 1.15; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+.loan-details { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 17px; }
+.loan-details > div { min-width: 0; }
+.loan-details span { display: block; color: var(--muted); font-size: 11px; }
+.loan-details strong { display: block; margin-top: 4px; color: var(--forest); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.loan-note { flex: 1; margin-bottom: 18px; padding-top: 14px; border-top: 1px solid var(--line); }
+.loan-card > .button { align-self: flex-start; margin-top: auto; }
+.comparison-grid { margin: 20px 0 16px; }
+.comparison-grid .goal-card { padding: 22px; border: 1px solid #dce5d1; border-radius: 17px; }
+.comparison-grid .goal-card > strong { display: block; margin: 9px 0 6px; color: var(--forest); font-size: 34px; font-weight: 550; line-height: 1.15; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+.comparison-grid .goal-card > span { color: #748465; font-size: 12px; }
+.comparison-grid .goal-card.selected { background: var(--forest); border-color: var(--forest); }
+.comparison-grid .goal-card.selected > strong { color: #f4f8e9; }
+.comparison-grid .goal-card.selected > span, .comparison-grid .goal-card.selected .eyebrow { color: #c2d4b5; }
+.scenario-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 13px; margin: 22px 0; }
+.scenario-card { display: flex; min-width: 0; flex-direction: column; align-items: flex-start; padding: 18px 16px; background: #f7f8f1; border: 1px solid #e2e7d8; border-radius: 15px; }
+.scenario-card.base { background: #eef1e5; border-color: #d6dfc7; }
+.scenario-number { margin-bottom: 17px; color: #839372; font-size: 11px; font-weight: 600; letter-spacing: .08em; }
+.scenario-card h3 { min-height: 38px; margin-bottom: 14px; color: #637758; font-size: 13px; font-weight: 500; }
+.scenario-card > strong { margin-top: auto; color: var(--forest); font-size: 23px; font-weight: 600; line-height: 1.2; letter-spacing: -.025em; font-variant-numeric: tabular-nums; }
+.scenario-card p { margin: 6px 0 0; font-size: 11px; }
+.detail-list { margin: 0 0 17px; }
+.detail-list > div { display: flex; align-items: baseline; justify-content: space-between; gap: 18px; padding: 11px 0; border-bottom: 1px solid #ebeee3; }
+.detail-list > div:first-child { padding-top: 0; }
+.detail-list > div:last-child { padding-bottom: 0; border-bottom: 0; }
+.detail-list dt { color: var(--muted); font-size: 13px; }
+.detail-list dd { max-width: 58%; margin: 0; color: var(--forest); font-size: 13px; font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.settings-value { display: block; margin: 7px 0 18px; color: var(--forest); font-size: 23px; font-weight: 600; line-height: 1.2; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.settings-section .inline-actions + p { margin-top: 16px; }
+.grid-2 > .settings-section + .settings-section { padding-top: 23px; }
+details { margin-top: 16px; color: var(--muted); font-size: 13px; }
+summary { min-height: 44px; padding: 10px 0; color: var(--forest); cursor: pointer; font-weight: 600; }
+details[open] summary { margin-bottom: 6px; }
+.danger-zone { border-color: #ead8cc; }
+.table-link { display: inline-flex; align-items: center; min-height: 44px; padding: 4px 0; color: var(--forest); font-size: 12px; font-weight: 500; letter-spacing: 0; text-transform: none; text-decoration: underline; text-decoration-color: #c9d5be; text-underline-offset: 3px; }
+.table-link:hover { text-decoration-color: var(--forest); }
+.negative-row { background: #fff9f2; }
+.negative-row:hover { background: #fff4e7; }
+.negative-row td:last-child { color: #a35f3e; }
+.table-note { margin: 17px 0 0; }
+.action-spacer { flex: 1; }
+.amount-field { margin-bottom: 18px; }
+.amount-field .field { margin-bottom: 0; }
+.amount-field input { min-height: 76px; padding: 15px 17px; color: var(--forest); background: #f1f5e7; border-color: #dbe5cd; font-size: 34px; font-weight: 550; letter-spacing: -.04em; line-height: 1.2; }
+.check-field small { display: block; margin-top: 4px; color: var(--muted); font-size: 11px; }
+
+.bottom-nav { position: fixed; z-index: 20; left: 50%; bottom: 18px; width: min(600px, calc(100% - 40px)); transform: translateX(-50%); padding: 5px 10px; background: #fffefa; border: 1px solid #dde4d4; border-radius: 22px; box-shadow: 0 8px 32px rgb(23 51 32 / 12%); }
+.nav-inner { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 3px; }
+.nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; min-width: 0; min-height: 61px; padding: 5px 2px; color: #7a8575; border-radius: 15px; }
+.nav-icon { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 28px; border-radius: 10px; transition: background .16s, color .16s; }
+.nav-label { font-size: 11px; font-weight: 600; letter-spacing: .01em; }
+.nav-item:hover { color: var(--forest); background: #f2f5e9; }
+.nav-item.active, .nav-item[aria-current="page"], .nav-item[aria-selected="true"] { color: var(--forest); }
+.nav-item.active .nav-icon, .nav-item[aria-current="page"] .nav-icon, .nav-item[aria-selected="true"] .nav-icon { background: var(--lime); }
+.nav-item.active .nav-label, .nav-item[aria-current="page"] .nav-label, .nav-item[aria-selected="true"] .nav-label { font-weight: 700; }
+
+#editor { width: min(620px, calc(100% - 32px)); max-height: calc(100vh - 40px); max-height: calc(100dvh - 40px); margin: auto; padding: 0; color: var(--ink); background: var(--surface); border: 1px solid #dce3d4; border-radius: 23px; box-shadow: 0 24px 90px rgb(10 31 20 / 24%); overflow: hidden; }
+#editor[open] { display: flex; flex-direction: column; }
+#editor::backdrop { background: rgb(23 43 31 / 45%); backdrop-filter: blur(3px); }
+.dialog-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 23px 24px 18px; border-bottom: 1px solid var(--line); flex-shrink: 0; }
+.dialog-heading { min-width: 0; padding-top: 2px; }
+#dialogTitle { margin: 0; color: var(--forest); font-size: 23px; font-weight: 650; line-height: 1.25; letter-spacing: -.03em; }
+#dialogSub { margin: 6px 0 0; }
+#dialogSub:empty { display: none; }
+.dialog-header .icon-button { margin-top: -5px; margin-right: -7px; }
+.dialog-scroll { min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 23px 24px; scrollbar-width: thin; }
+#dialogBody { min-width: 0; }
+#dialogBody .field:last-child, #dialogBody .field-grid:last-child { margin-bottom: 0; }
+#formError { margin-top: 18px; padding: 12px 14px; color: #9c4038; background: #fdefe8; border: 1px solid #edcfc3; border-radius: 11px; font-size: 13px; }
+#formError:empty { display: none; }
+.dialog-actions { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 10px; padding: 16px 24px 20px; background: #f8f9f2; border-top: 1px solid var(--line); flex-shrink: 0; }
+.dialog-actions:empty { display: none; }
+.dialog-actions .button { min-width: 104px; }
+.toast { position: fixed; z-index: 60; bottom: calc(108px + env(safe-area-inset-bottom)); left: 50%; display: flex; align-items: center; gap: 15px; width: max-content; max-width: min(480px, calc(100% - 32px)); padding: 11px 17px; color: #f6f9ee; background: var(--forest); border: 1px solid #2e5942; border-radius: 13px; box-shadow: 0 6px 24px rgb(25 45 31 / 16%); text-align: center; font-size: 13px; line-height: 1.45; transform: translate(-50%, 8px); pointer-events: none; visibility: hidden; opacity: 0; overflow-wrap: anywhere; transition: opacity .18s, transform .18s, visibility .18s; }
+.toast.show { visibility: visible; opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+.toast > span { min-width: 0; }
+.toast button { min-width: 44px; min-height: 44px; padding: 5px 2px; color: var(--lime); font-size: 12px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+.toast button:focus-visible { outline-color: var(--lime); }
+.toast:empty { display: none; }
+.noscript-message { position: fixed; z-index: 80; inset: 25% 20px auto; width: min(500px, calc(100% - 40px)); margin: auto; padding: 30px; color: var(--forest); background: var(--surface); border: 1px solid var(--line); border-radius: 20px; box-shadow: 0 10px 60px rgb(25 45 31 / 14%); }
+
+@media (min-width: 1200px) {
+  .app-main { padding-top: 38px; }
+  .hero { padding: 33px; }
+}
+
+@media (max-width: 900px) {
+  .grid-4, .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hero { gap: 22px; padding: 26px; }
+  .hero-aside { min-width: 195px; padding-left: 22px; }
+  .hero-value { font-size: 44px; }
+  .stat-value { font-size: 28px; }
+  .scenario-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 680px) {
+  .header-inner { min-height: 72px; padding: 12px 20px; }
+  .app-main { padding: 26px 20px calc(var(--nav-height) + 36px + env(safe-area-inset-bottom)); }
+  .brand-name { font-size: 22px; }
+  .brand-mark { width: 34px; height: 34px; }
+  .save-status { font-size: 11px; margin-right: 3px; }
+  .page-head { flex-wrap: wrap; gap: 15px; margin-bottom: 21px; }
+  .page-head .inline-actions { width: 100%; }
+  .page-head h1 { font-size: 30px; }
+  .month-picker { margin-top: 0; }
+  .month-picker input { font-size: 16px; width: 180px; }
+  .hero { grid-template-columns: minmax(0, 1fr); gap: 23px; padding: 24px; border-radius: 22px; }
+  .hero-value { font-size: 43px; }
+  .onboarding h1 { font-size: 37px; }
+  .hero-aside { min-width: 0; max-width: none; padding: 19px 0 0; border-left: 0; border-top: 1px solid rgb(234 245 218 / 19%); }
+  .hero-actions { gap: 8px; }
+  .grid-2, .grid-3 { grid-template-columns: minmax(0, 1fr); }
+  .grid-3.kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grid-3.kpi-grid > .stat:last-child { grid-column: 1 / -1; }
+  .grid-2, .grid-3, .grid-4, .kpi-grid { gap: 14px; }
+  .kpi-grid { margin-bottom: 20px; }
+  .card { padding: 20px; border-radius: 18px; }
+  .card-head { gap: 10px; margin-bottom: 17px; }
+  .card-head h2 { font-size: 19px; }
+  .goal-strip { flex-direction: column; align-items: flex-start; gap: 17px; padding: 23px; }
+  .goal-strip .button { max-width: 100%; }
+  .comparison-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .comparison-grid .goal-card { padding: 18px; }
+  .comparison-grid .goal-card > strong { font-size: 29px; }
+  .stat { padding: 17px; border-radius: 16px; }
+  .stat-value { font-size: 25px; }
+  .section-title { margin-top: 25px; }
+  .toolbar { gap: 10px; }
+  .toolbar .segmented { width: 100%; display: flex; }
+  .toolbar .segmented > button { flex: 1; padding: 10px 8px; }
+  .search-field, .search-field input { width: 100%; }
+  .search-field input { font-size: 16px; }
+  .tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .scenario-grid { gap: 12px; }
+  .scenario-card { padding: 17px 15px; }
+  .scenario-card h3 { min-height: 35px; }
+  .grid-2 > .settings-section + .settings-section { padding-top: 20px; }
+  .settings-section .grid-3 { gap: 4px; }
+  .mobile-hide { display: none !important; }
+  .bottom-nav { left: 0; bottom: 0; width: 100%; transform: none; padding: 6px max(10px, env(safe-area-inset-left)) calc(7px + env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-right)); background: #fffefa; border: 0; border-top: 1px solid #e0e5d7; border-radius: 0; box-shadow: 0 -4px 22px rgb(23 51 32 / 4%); }
+  .nav-item { min-height: 61px; }
+  .nav-inner { max-width: 520px; margin: 0 auto; }
+  .toast { bottom: calc(92px + env(safe-area-inset-bottom)); }
+  .field input, .field select, .field textarea, input.form-input, select.form-input, textarea.form-input { font-size: 16px; }
+  .amount-field input { font-size: 34px; }
+}
+
+@media (max-width: 440px) {
+  .header-inner { gap: 12px; padding-inline: 18px; }
+  .header-actions { gap: 4px; }
+  .save-status { max-width: 94px; gap: 5px; font-size: 11px; line-height: 1.35; }
+  .brand { gap: 8px; }
+  .brand-name { font-size: 21px; }
+  .app-main { padding-inline: 18px; }
+  h1, .page-head h1 { font-size: 29px; }
+  .hero { padding: 23px 21px; }
+  .hero-value { font-size: 39px; }
+  .hero-caption { font-size: 13px; }
+  .hero-actions > .button { flex: 1; padding-inline: 11px; }
+  .grid-4, .kpi-grid { gap: 11px; }
+  .stat { padding: 15px 13px; }
+  .stat-value { font-size: 24px; letter-spacing: -.045em; }
+  .stat .metric-label { font-size: 11px; }
+  .card { padding: 18px; }
+  .card-head { align-items: flex-start; }
+  .card-head .button { padding: 10px 11px; }
+  .card-head .ghost { padding-inline: 4px; }
+  .card-head > .button { flex-shrink: 0; }
+  .notice .row { flex-direction: column; align-items: flex-start; gap: 13px; }
+  .intro-grid .card { padding: 23px; }
+  .comparison-grid { grid-template-columns: minmax(0, 1fr); }
+  .comparison-grid .goal-card { padding: 20px; }
+  .comparison-grid .goal-card > strong { font-size: 34px; }
+  .scenario-card { padding: 15px 12px; }
+  .scenario-card h3 { min-height: 38px; font-size: 12px; }
+  .scenario-card > strong { font-size: 21px; }
+  .loan-details { gap: 9px; }
+  .loan-details span { font-size: 11px; }
+  .loan-details strong { font-size: 12px; }
+  .loan-value { font-size: 32px; }
+  .grid-2 > .settings-section + .settings-section { padding-top: 18px; }
+  .list-row { gap: 10px; }
+  .list-row > .inline-actions { gap: 2px; }
+  .list-row .row-value { font-size: 13px; }
+  .row-main > strong { font-size: 13px; }
+  .field-grid { grid-template-columns: minmax(0, 1fr); gap: 15px; }
+  .button { padding: 11px 14px; }
+  .segmented button, .tabs button, .tabs a { padding-inline: 11px; }
+  #editor { width: calc(100% - 24px); max-height: calc(100dvh - 24px); border-radius: 20px; }
+  .dialog-header { padding: 21px 19px 16px; gap: 10px; }
+  .dialog-scroll { padding: 20px 19px; }
+  .dialog-actions { padding: 15px 19px 19px; }
+  .dialog-actions .button { flex: 1; min-width: 0; }
+  .dialog-actions .action-spacer { display: none; }
+  #dialogTitle { font-size: 22px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+
+@media print {
+  body { color: #182d20; background: white; }
+  .app-header, .bottom-nav, .page-head .inline-actions, .hero-actions, .toast, .skip-link, #editor, #backupFile { display: none !important; }
+  .app-main { width: 100%; max-width: none; padding: 0; }
+  .hero, .card, .stat, .goal-card { box-shadow: none; break-inside: avoid; }
+  .hero { color: var(--forest); background: #eff4e5; border: 1px solid #d5dfca; }
+  .hero h1, .hero h2, .hero h3, .hero-value, .hero-aside .row-value { color: var(--forest); }
+  .hero .eyebrow, .hero .muted, .hero .metric-label { color: #617057; }
+  .table-wrap { overflow: visible; }
+}
+
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to your plan</a>
+  <div class="app-shell">
+    <header class="app-header">
+      <div class="header-inner">
+        <a class="brand" href="#main" aria-label="Clearpath, your money with a plan">
+          <svg class="brand-mark" width="36" height="36" viewBox="0 0 36 36" aria-hidden="true">
+            <rect width="36" height="36" rx="11" fill="currentColor"/>
+            <path d="M10 25V19H16V13H22V7" fill="none" stroke="var(--lime)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M22 7H27" fill="none" stroke="var(--lime)" stroke-width="3.2" stroke-linecap="round"/>
+          </svg>
+          <span class="brand-name">clearpath<span class="brand-period">.</span></span>
+        </a>
+        <div class="header-actions">
+          <span id="saveStatus" class="save-status" role="status" aria-live="polite">On this device</span>
+          <button type="button" class="icon-button header-action" data-action="backup" aria-label="Export a backup" title="Export a backup">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 3v12m-4-4 4 4 4-4"/>
+              <path d="M5 16v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3"/>
+            </svg>
+          </button>
+          <button type="button" class="icon-button header-action mobile-hide" data-action="settings" aria-label="Open settings" title="Open settings">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="m9.4 3-.5 2.2-2 .9L5 5.5 2.5 9.8l1.6 1.6v2l-1.6 1.4L5 19.2l2.1-.6 1.8 1 .5 2.1h5.1l.5-2.1 1.9-1 2.1.6 2.5-4.4-1.6-1.4v-2l1.6-1.6L19 5.5l-2.1.6-1.9-.9-.5-2.2z" transform="translate(0 -0.35) scale(1 .99)"/>
+              <circle cx="12" cy="12" r="3.1"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" class="app-main" tabindex="-1">
+      <div id="content">
+        <div class="loading-state" role="status">
+          <span class="loading-mark" aria-hidden="true"></span>
+          <p>Opening your plan…</p>
+        </div>
+      </div>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Main navigation">
+      <div class="nav-inner">
+        <button type="button" class="nav-item" data-view="home">
+          <span class="nav-icon"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 21v-8h6v8"/></svg></span>
+          <span class="nav-label">Home</span>
+        </button>
+        <button type="button" class="nav-item" data-view="activity">
+          <span class="nav-icon"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h15m-4-4 4 4-4 4M20 17H5m4-4-4 4 4 4"/></svg></span>
+          <span class="nav-label">Activity</span>
+        </button>
+        <button type="button" class="nav-item" data-view="plan">
+          <span class="nav-icon"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7.5 3v4m9-4v4M3 10h18m-13 5 2.5 2.5L16 12"/></svg></span>
+          <span class="nav-label">Plan</span>
+        </button>
+        <button type="button" class="nav-item" data-view="loans">
+          <span class="nav-icon"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-6 9 6H3zm0 12h18M5 9v9m7-9v9m7-9v9M3 18h18"/></svg></span>
+          <span class="nav-label">Loans</span>
+        </button>
+        <button type="button" class="nav-item" data-view="settings">
+          <span class="nav-icon"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3v7m0 4v7M12 3v12m0 4v2M19 3v3m0 4v11"/><rect x="2.5" y="10" width="5" height="4" rx="1.5"/><rect x="9.5" y="15" width="5" height="4" rx="1.5"/><rect x="16.5" y="6" width="5" height="4" rx="1.5"/></svg></span>
+          <span class="nav-label">Settings</span>
+        </button>
+      </div>
+    </nav>
+  </div>
+
+  <dialog id="editor" aria-labelledby="dialogTitle" aria-describedby="dialogSub">
+    <div class="dialog-header">
+      <div class="dialog-heading">
+        <h2 id="dialogTitle">Edit your plan</h2>
+        <p id="dialogSub" class="muted small"></p>
+      </div>
+      <button type="button" class="icon-button ghost" data-action="close-dialog" aria-label="Close dialog">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+    <div class="dialog-scroll">
+      <div id="dialogBody"></div>
+      <div id="formError" role="alert" hidden></div>
+    </div>
+    <div id="dialogActions" class="dialog-actions"></div>
+  </dialog>
+
+  <input type="file" id="backupFile" accept="application/json,.json" hidden>
+  <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <noscript><div class="noscript-message">Please enable JavaScript to open Clearpath. Your information stays on this device unless you export it.</div></noscript>
+  <script>
+(function (root, factory) {
+  'use strict';
+  const api = factory();
+  if (typeof module === 'object' && module.exports) module.exports = api;
+  if (root) root.CP = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+  'use strict';
+
+  // This module intentionally contains no private example figures. The optional
+  // personal starting data lives in seed.js, which is omitted from public builds.
+  const SCHEMA_VERSION = 1;
+  const MAX_MONEY = 1e12;
+  const MAX_ROWS = 1200;
+  const SYNTHETIC = new Set(['scenario-bonus', 'goal-education', 'goal-investment']);
+  const KINDS = new Set(['income', 'expense', 'debt']);
+  const own = (object, key) => Object.prototype.hasOwnProperty.call(object, key);
+  const isObject = value => value !== null && typeof value === 'object' && !Array.isArray(value);
+  const round = value => Math.round((value + Number.EPSILON) * 100) / 100;
+  const sum = values => round(values.reduce((total, value) => total + value, 0));
+  const pad = value => String(value).padStart(2, '0');
+
+  function daysInMonth(year, month) {
+    if (month === 2) return year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0) ? 29 : 28;
+    return [4, 6, 9, 11].includes(month) ? 30 : 31;
+  }
+
+  function validMonth(value) {
+    return typeof value === 'string' && /^[0-9]{4}-(0[1-9]|1[0-2])$/.test(value)
+      && Number(value.slice(0, 4)) > 0;
+  }
+
+  function validDate(value) {
+    if (typeof value !== 'string' || !/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/.test(value)) return false;
+    const [year, month, day] = value.split('-').map(Number);
+    return year > 0 && day <= daysInMonth(year, month);
+  }
+
+  function localDate(date = new Date()) {
+    if (!(date instanceof Date) || !Number.isFinite(date.getTime())) throw new RangeError('A valid Date is required.');
+    return `${String(date.getFullYear()).padStart(4, '0')}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+  }
+
+  function monthOf(value) {
+    if (value instanceof Date) return localDate(value).slice(0, 7);
+    if (validMonth(value)) return value;
+    if (validDate(value)) return value.slice(0, 7);
+    throw new RangeError('Use a valid calendar date or month.');
+  }
+
+  function addMonths(month, count) {
+    if (!validMonth(month) || !Number.isSafeInteger(count)) throw new RangeError('A valid month and integer month offset are required.');
+    const [year, number] = month.split('-').map(Number);
+    const index = year * 12 + number - 1 + count;
+    const nextYear = Math.floor(index / 12);
+    if (nextYear < 1 || nextYear > 9999) throw new RangeError('The resulting year is outside the supported calendar.');
+    return `${String(nextYear).padStart(4, '0')}-${pad(index % 12 + 1)}`;
+  }
+
+  function monthDistance(from, to) {
+    if (!validMonth(from) || !validMonth(to)) throw new RangeError('Use valid calendar months.');
+    return (Number(to.slice(0, 4)) - Number(from.slice(0, 4))) * 12
+      + Number(to.slice(5, 7)) - Number(from.slice(5, 7));
+  }
+
+  function dateInMonth(month, day) {
+    const [year, number] = month.split('-').map(Number);
+    return `${month}-${pad(Math.min(day, daysInMonth(year, number)))}`;
+  }
+
+  function money(value) {
+    return typeof value === 'number' && Number.isFinite(value)
+      ? new Intl.NumberFormat('en-IN', {style: 'currency', currency: 'INR', maximumFractionDigits: 0}).format(value)
+      : '—';
+  }
+
+  function emptyState() {
+    const now = new Date();
+    const month = monthOf(now);
+    const nextYear = now.getFullYear() + 1;
+    return {
+      schemaVersion: SCHEMA_VERSION,
+      app: 'clearpath',
+      updatedAt: now.toISOString(),
+      settings: {
+        name: '', startMonth: month, openingCash: null,
+        liquidityFloor: 0, reserveTarget: 0, targetYear: nextYear + 8,
+        educationMonthly: 0, investmentMonthly: 0, includeExpected: true,
+        householdInflation: 0,
+        scenario: {
+          bonusEnabled: false, annualBonus: 0, bonusMonth: 12,
+          bonusStartYear: nextYear, raiseEnabled: false, salaryGrowth: 0,
+          raiseMonth: 4, raiseStartYear: nextYear, prepayShare: 50,
+          extraStartMonth: `${nextYear}-01`
+        },
+        homeComparison: {principal: 0, rate: 0, startMonth: `${nextYear}-01`, baseYears: 9}
+      },
+      plans: [], loans: [], transactions: []
+    };
+  }
+
+  function forecastMonths(state) {
+    return Math.max(120, (state.settings.targetYear - Number(state.settings.startMonth.slice(0, 4)) + 2) * 12);
+  }
+
+  /**
+   * Import boundary. Only the documented schema is copied; no object from an
+   * untrusted backup is spread or merged into the application's state.
+   * Invalid input returns state:null so callers cannot accidentally use it.
+   */
+  function validateState(raw) {
+    const errors = [];
+    const defaults = emptyState();
+    const error = message => { if (errors.length < 100) errors.push(message); };
+    if (!isObject(raw)) return {ok: false, errors: ['The backup must contain a state object.'], state: null};
+    if (raw.schemaVersion !== SCHEMA_VERSION) error('Unsupported schemaVersion; expected 1.');
+    if (raw.app !== 'clearpath') error('This is not a Clearpath backup.');
+
+    function object(value, label, fallback) {
+      if (value === undefined) return fallback;
+      if (!isObject(value)) { error(`${label} must be an object.`); return fallback; }
+      return value;
+    }
+    function text(value, label, fallback = '', max = 2000, required = false) {
+      if (value === undefined) return fallback;
+      if (typeof value !== 'string' || value.length > max || (required && !value.trim())) {
+        error(`${label} must be ${required ? 'a nonempty' : 'a'} text value of at most ${max} characters.`);
+        return fallback;
+      }
+      return value;
+    }
+    function number(value, label, fallback, min = 0, max = MAX_MONEY, integer = false, nullable = false) {
+      if (value === undefined) return fallback;
+      if (value === null && nullable) return null;
+      if (typeof value !== 'number' || !Number.isFinite(value) || value < min || value > max || (integer && !Number.isSafeInteger(value))) {
+        error(`${label} must be ${nullable ? 'null or ' : ''}a finite ${integer ? 'integer ' : ''}number from ${min} to ${max}.`);
+        return fallback;
+      }
+      return value;
+    }
+    function bool(value, label, fallback) {
+      if (value === undefined) return fallback;
+      if (typeof value !== 'boolean') { error(`${label} must be true or false.`); return fallback; }
+      return value;
+    }
+    function choice(value, allowed, label, fallback) {
+      if (!allowed.has(value)) { error(`${label} is not a supported value.`); return fallback; }
+      return value;
+    }
+    function date(value, label, fallback, nullable = false, monthOnly = false) {
+      if (value === undefined) return fallback;
+      if (value === null && nullable) return null;
+      if (!(monthOnly ? validMonth(value) : validDate(value))) {
+        error(`${label} must be ${nullable ? 'null or ' : ''}a valid ${monthOnly ? 'YYYY-MM month' : 'YYYY-MM-DD date'}.`);
+        return fallback;
+      }
+      return value;
+    }
+    const ids = new Set();
+    function id(value, label, nullable = false, reference = false) {
+      if ((value === undefined || value === null) && nullable) return null;
+      if (typeof value !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$/.test(value)) {
+        error(`${label} must be a valid identifier.`);
+        return '';
+      }
+      if (!reference) {
+        if (ids.has(value)) error(`Duplicate identifier: ${value}.`);
+        if (SYNTHETIC.has(value)) error(`${value} is reserved for a built-in allocation.`);
+        ids.add(value);
+      }
+      return value;
+    }
+    function array(value, label, max) {
+      if (!Array.isArray(value)) { error(`${label} must be an array.`); return []; }
+      if (value.length > max) { error(`${label} exceeds the supported ${max} records.`); return []; }
+      return value;
+    }
+
+    const s = object(raw.settings, 'settings', {});
+    const sc = object(s.scenario, 'settings.scenario', {});
+    const hc = object(s.homeComparison, 'settings.homeComparison', {});
+    const ds = defaults.settings;
+    const settings = {
+      name: text(s.name, 'settings.name', ds.name, 100),
+      startMonth: date(s.startMonth, 'settings.startMonth', ds.startMonth, false, true),
+      openingCash: number(s.openingCash, 'settings.openingCash', null, -MAX_MONEY, MAX_MONEY, false, true),
+      liquidityFloor: number(s.liquidityFloor, 'settings.liquidityFloor', 0),
+      reserveTarget: number(s.reserveTarget, 'settings.reserveTarget', 0),
+      targetYear: number(s.targetYear, 'settings.targetYear', ds.targetYear, 1, 9999, true),
+      educationMonthly: number(s.educationMonthly, 'settings.educationMonthly', 0),
+      investmentMonthly: number(s.investmentMonthly, 'settings.investmentMonthly', 0),
+      includeExpected: bool(s.includeExpected, 'settings.includeExpected', true),
+      householdInflation: number(s.householdInflation, 'settings.householdInflation', 0, 0, 100),
+      scenario: {
+        bonusEnabled: bool(sc.bonusEnabled, 'scenario.bonusEnabled', false),
+        annualBonus: number(sc.annualBonus, 'scenario.annualBonus', 0),
+        bonusMonth: number(sc.bonusMonth, 'scenario.bonusMonth', 12, 1, 12, true),
+        bonusStartYear: number(sc.bonusStartYear, 'scenario.bonusStartYear', ds.scenario.bonusStartYear, 1, 9999, true),
+        raiseEnabled: bool(sc.raiseEnabled, 'scenario.raiseEnabled', false),
+        salaryGrowth: number(sc.salaryGrowth, 'scenario.salaryGrowth', 0, 0, 100),
+        raiseMonth: number(sc.raiseMonth, 'scenario.raiseMonth', 4, 1, 12, true),
+        raiseStartYear: number(sc.raiseStartYear, 'scenario.raiseStartYear', ds.scenario.raiseStartYear, 1, 9999, true),
+        prepayShare: number(sc.prepayShare, 'scenario.prepayShare', 50, 0, 100),
+        extraStartMonth: date(sc.extraStartMonth, 'scenario.extraStartMonth', ds.scenario.extraStartMonth, false, true)
+      },
+      homeComparison: {
+        principal: number(hc.principal, 'homeComparison.principal', 0),
+        rate: number(hc.rate, 'homeComparison.rate', 0, 0, 1000),
+        startMonth: date(hc.startMonth, 'homeComparison.startMonth', ds.homeComparison.startMonth, false, true),
+        baseYears: number(hc.baseYears, 'homeComparison.baseYears', 9, 1, 100, true)
+      }
+    };
+    const startYear = Number(settings.startMonth.slice(0, 4));
+    if (settings.targetYear < startYear || settings.targetYear > startYear + 98) {
+      error('settings.targetYear must be between the snapshot year and 98 years after it.');
+    }
+    try {
+      addMonths(settings.startMonth, Math.max(120, (settings.targetYear - startYear + 2) * 12) - 1);
+      addMonths(settings.homeComparison.startMonth, settings.homeComparison.baseYears * 12 - 1);
+    } catch (_) {
+      error('The forecast horizon must remain within calendar years 0001 through 9999.');
+    }
+
+    const plans = array(raw.plans, 'plans', 5000).map((value, index) => {
+      const p = object(value, `plans[${index}]`, {});
+      const label = `plans[${index}]`;
+      for (const key of ['id', 'name', 'kind', 'amount', 'frequency', 'start']) {
+        if (!own(p, key)) error(`${label}.${key} is required.`);
+      }
+      const start = date(p.start, `${label}.start`, `${settings.startMonth}-01`);
+      const end = date(p.end, `${label}.end`, null, true);
+      if (end && end < start) error(`${label}.end cannot be before start.`);
+      const frequency = choice(p.frequency, new Set(['monthly', 'annual', 'once']), `${label}.frequency`, 'once');
+      const annualMonth = number(p.annualMonth, `${label}.annualMonth`, null, 1, 12, true, true);
+      return {
+        id: id(p.id, `${label}.id`), name: text(p.name, `${label}.name`, '', 200, true),
+        kind: choice(p.kind, KINDS, `${label}.kind`, 'expense'),
+        category: text(p.category, `${label}.category`, '', 100),
+        amount: number(p.amount, `${label}.amount`, 0), frequency, start, end,
+        dueDay: number(p.dueDay, `${label}.dueDay`, Number(start.slice(8)), 1, 31, true),
+        annualMonth: frequency === 'annual' ? (annualMonth || Number(start.slice(5, 7))) : null,
+        expected: bool(p.expected, `${label}.expected`, false),
+        enabled: bool(p.enabled, `${label}.enabled`, true),
+        loanId: id(p.loanId, `${label}.loanId`, true, true),
+        note: text(p.note, `${label}.note`, '')
+      };
+    });
+
+    const loans = array(raw.loans, 'loans', 5000).map((value, index) => {
+      const l = object(value, `loans[${index}]`, {});
+      const label = `loans[${index}]`;
+      for (const key of ['id', 'name', 'balance', 'kind']) {
+        if (!own(l, key)) error(`${label}.${key} is required.`);
+      }
+      return {
+        id: id(l.id, `${label}.id`), name: text(l.name, `${label}.name`, '', 200, true),
+        balance: number(l.balance, `${label}.balance`, 0),
+        apr: number(l.apr, `${label}.apr`, null, 0, 1000, false, true),
+        emi: number(l.emi, `${label}.emi`, null, 0, MAX_MONEY, false, true),
+        kind: choice(l.kind, new Set(['home', 'personal', 'card', 'informal']), `${label}.kind`, 'personal'),
+        maturity: date(l.maturity, `${label}.maturity`, null, true, true),
+        target: date(l.target, `${label}.target`, null, true, true),
+        note: text(l.note, `${label}.note`, ''),
+        aprAssumed: bool(l.aprAssumed, `${label}.aprAssumed`, false)
+      };
+    });
+
+    const transactions = array(raw.transactions, 'transactions', 50000).map((value, index) => {
+      const t = object(value, `transactions[${index}]`, {});
+      const label = `transactions[${index}]`;
+      for (const key of ['id', 'type', 'amount', 'date']) {
+        if (!own(t, key)) error(`${label}.${key} is required.`);
+      }
+      const actualDate = date(t.date, `${label}.date`, `${settings.startMonth}-01`);
+      const transaction = {
+        id: id(t.id, `${label}.id`), type: choice(t.type, KINDS, `${label}.type`, 'expense'),
+        amount: number(t.amount, `${label}.amount`, 0), date: actualDate,
+        description: text(t.description, `${label}.description`, '', 500),
+        planId: id(t.planId, `${label}.planId`, true, true),
+        period: date(t.period, `${label}.period`, actualDate.slice(0, 7), false, true),
+        complete: bool(t.complete, `${label}.complete`, false),
+        loanId: id(t.loanId, `${label}.loanId`, true, true),
+        principal: number(t.principal, `${label}.principal`, null, 0, MAX_MONEY, false, true)
+      };
+      if (transaction.principal !== null) {
+        if (transaction.type !== 'debt') error(`${label}.principal is only valid for a debt payment.`);
+        if (!transaction.loanId) error(`${label}.principal needs a linked loan.`);
+        if (transaction.principal > transaction.amount) error(`${label}.principal cannot exceed its cash payment.`);
+      }
+      if (transaction.loanId && transaction.type !== 'debt') error(`${label}.loanId is only valid for a debt payment.`);
+      return transaction;
+    });
+
+    // Validate compounded values too: finite inputs can still overflow after
+    // many annual increases. Scenario comparisons use growth even when the cash
+    // forecast toggle is off, so include their full horizon here.
+    const lastYear = Math.max(settings.targetYear + 1,
+      startYear + 10, Number(settings.homeComparison.startMonth.slice(0, 4)) + settings.homeComparison.baseYears);
+    for (const p of plans) {
+      let factor = 1;
+      if (p.kind === 'income' && p.category === 'salary') {
+        factor = Math.pow(1 + settings.scenario.salaryGrowth / 100, Math.max(0, lastYear - settings.scenario.raiseStartYear + 1));
+      }
+      if (p.kind === 'expense' && p.category === 'household') {
+        factor = Math.pow(1 + settings.householdInflation / 100, Math.max(0, lastYear - 2027));
+      }
+      if (!Number.isFinite(factor) || p.amount * factor > MAX_MONEY) {
+        error(`Plan ${p.name || p.id} grows beyond the supported amount. Reduce the growth rate or forecast horizon.`);
+      }
+    }
+
+    const loanIds = new Set(loans.map(l => l.id));
+    const planMap = new Map(plans.map(p => [p.id, p]));
+    for (const p of plans) {
+      if (p.loanId && !loanIds.has(p.loanId)) error(`Plan ${p.name || p.id} references a missing loan.`);
+      if (p.loanId && p.kind !== 'debt') error(`Plan ${p.name || p.id} can link a loan only when its kind is debt.`);
+    }
+    for (const t of transactions) {
+      if (t.loanId && !loanIds.has(t.loanId)) error(`Transaction ${t.id} references a missing loan.`);
+      if (!t.planId) continue;
+      const p = planMap.get(t.planId);
+      if (!p && !SYNTHETIC.has(t.planId)) {
+        error(`Transaction ${t.id} references a missing plan. Unlink it to keep it as an unplanned actual.`);
+        continue;
+      }
+      const expectedKind = p ? p.kind : t.planId === 'scenario-bonus' ? 'income' : 'expense';
+      if (t.type !== expectedKind) error(`Transaction ${t.id} has a different type from its linked plan.`);
+      if (p && p.loanId && t.loanId && p.loanId !== t.loanId) error(`Transaction ${t.id} links a different loan from its repayment plan.`);
+    }
+
+    let updatedAt = defaults.updatedAt;
+    if (own(raw, 'updatedAt')) {
+      if (typeof raw.updatedAt !== 'string' || raw.updatedAt.length > 60 || !Number.isFinite(Date.parse(raw.updatedAt))) {
+        error('updatedAt must be a valid timestamp.');
+      } else updatedAt = raw.updatedAt;
+    }
+    return errors.length
+      ? {ok: false, errors, state: null}
+      : {ok: true, errors: [], state: {schemaVersion: SCHEMA_VERSION, app: 'clearpath', updatedAt, settings, plans, loans, transactions}};
+  }
+
+  function raiseFactor(settings, month) {
+    const sc = settings.scenario;
+    const year = Number(month.slice(0, 4));
+    const monthNumber = Number(month.slice(5, 7));
+    const count = Math.max(0, year - sc.raiseStartYear + (monthNumber >= sc.raiseMonth ? 1 : 0));
+    return Math.pow(1 + sc.salaryGrowth / 100, count);
+  }
+
+  function planOccurrence(plan, month, settings, options = {}) {
+    if (!plan.enabled) return null;
+    if (!options.ignoreExpected && plan.kind === 'income' && plan.expected && !settings.includeExpected) return null;
+    let date;
+    if (plan.frequency === 'once') {
+      if (monthOf(plan.start) !== month) return null;
+      date = plan.start;
+    } else {
+      if (plan.frequency === 'annual' && Number(month.slice(5, 7)) !== (plan.annualMonth || Number(plan.start.slice(5, 7)))) return null;
+      date = dateInMonth(month, plan.dueDay);
+      if (date < plan.start || (plan.end && date > plan.end)) return null;
+    }
+    if (date < plan.start || (plan.end && date > plan.end)) return null;
+    let factor = 1;
+    if (!options.noRaise && settings.scenario.raiseEnabled && plan.kind === 'income' && plan.category === 'salary') factor *= raiseFactor(settings, month);
+    if (plan.kind === 'expense' && plan.category === 'household') {
+      const years = Math.max(0, Number(month.slice(0, 4)) - 2027);
+      factor *= Math.pow(1 + settings.householdInflation / 100, years);
+    }
+    return {...plan, date, period: month, amount: round(plan.amount * factor), baseAmount: plan.amount, synthetic: false};
+  }
+
+  function syntheticPlan(id, name, category, amount, kind, month, note) {
+    const date = dateInMonth(month, 31);
+    return {id, name, category, amount: round(amount), baseAmount: amount, kind,
+      frequency: id === 'scenario-bonus' ? 'annual' : 'monthly', start: date, end: null,
+      dueDay: 31, annualMonth: id === 'scenario-bonus' ? Number(month.slice(5, 7)) : null,
+      expected: id === 'scenario-bonus', enabled: true, loanId: null, note,
+      date, period: month, synthetic: true};
+  }
+
+  function occurrences(state, month) {
+    if (!validMonth(month)) throw new RangeError('Use a valid forecast month.');
+    if (month < state.settings.startMonth) return [];
+    const settings = state.settings;
+    const sc = settings.scenario;
+    const items = state.plans.map(p => planOccurrence(p, month, settings)).filter(Boolean);
+    if (sc.bonusEnabled && sc.annualBonus > 0 && Number(month.slice(0, 4)) >= sc.bonusStartYear
+      && Number(month.slice(5, 7)) === sc.bonusMonth) {
+      items.push(syntheticPlan('scenario-bonus', 'Annual bonus assumption', 'bonus', sc.annualBonus, 'income', month,
+        'Conditional usable cash after tax. This assumption does not record a receipt or an extra loan payment.'));
+    }
+    if (settings.educationMonthly > 0) items.push(syntheticPlan('goal-education', 'Education allocation', 'education', settings.educationMonthly, 'expense', month,
+      'A transfer out of available cash, counted once.'));
+    if (settings.investmentMonthly > 0) items.push(syntheticPlan('goal-investment', 'Investment allocation', 'investment', settings.investmentMonthly, 'expense', month,
+      'A transfer out of available cash, counted once.'));
+    return items.sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
+  }
+
+  function transferType(planId, category) {
+    if (planId === 'goal-education' || category === 'education') return 'education';
+    if (planId === 'goal-investment' || category === 'investment') return 'investment';
+    return null;
+  }
+
+  function groupActuals(state) {
+    const eligible = state.transactions.filter(t => monthOf(t.date) >= state.settings.startMonth);
+    const byMonth = new Map();
+    const byOccurrence = new Map();
+    for (const t of eligible) {
+      const month = monthOf(t.date);
+      if (!byMonth.has(month)) byMonth.set(month, []);
+      byMonth.get(month).push(t);
+      if (t.planId) {
+        const key = `${t.planId}\u0000${t.period}`;
+        if (!byOccurrence.has(key)) byOccurrence.set(key, []);
+        byOccurrence.get(key).push(t);
+      }
+    }
+    return {eligible, byMonth, byOccurrence};
+  }
+
+  function blankRow(month) {
+    return {month, income: 0, expense: 0, debt: 0, education: 0, investment: 0,
+      net: 0, cash: 0, actualIncome: 0, actualOut: 0, plannedIncome: 0, plannedOut: 0,
+      actualExpense: 0, actualDebt: 0, actualEducation: 0, actualInvestment: 0,
+      plannedExpense: 0, plannedDebt: 0, plannedEducation: 0, plannedInvestment: 0,
+      events: [], breakdown: [], actuals: []};
+  }
+
+  function monthlyRow(state, month, groups) {
+    const row = blankRow(month);
+    const planMap = new Map(state.plans.map(p => [p.id, p]));
+    row.actuals = groups.byMonth.get(month) || [];
+    for (const t of row.actuals) {
+      const linked = planMap.get(t.planId);
+      const transfer = t.type === 'expense' ? transferType(t.planId, linked && linked.category) : null;
+      const field = t.type === 'income' ? 'actualIncome' : t.type === 'debt' ? 'actualDebt'
+        : transfer === 'education' ? 'actualEducation' : transfer === 'investment' ? 'actualInvestment' : 'actualExpense';
+      row[field] += t.amount;
+      row.events.push({id: t.id, transactionId: t.id, planId: t.planId, source: 'actual',
+        kind: t.type, category: transfer || (linked ? linked.category : 'unplanned'),
+        name: t.description || (linked && linked.name) || (transfer ? `${transfer} transfer` : 'Recorded transaction'),
+        date: t.date, period: t.period, amount: t.amount, actualAmount: t.amount,
+        plannedAmount: 0, remainingAmount: 0, cashAmount: t.amount,
+        loanId: t.loanId, principal: t.principal, complete: t.complete, transfer,
+        status: 'actual', expected: false});
+    }
+    for (const item of occurrences(state, month)) {
+      const records = (groups.byOccurrence.get(`${item.id}\u0000${month}`) || []).filter(t => t.type === item.kind);
+      const actualAmount = sum(records.map(t => t.amount));
+      const complete = records.some(t => t.complete);
+      const remainingAmount = complete ? 0 : round(Math.max(0, item.amount - actualAmount));
+      const status = complete || (records.length && remainingAmount === 0) ? 'complete' : records.length ? 'partial' : 'planned';
+      row.breakdown.push({...item, plannedAmount: item.amount, actualAmount, remainingAmount, complete, status,
+        transactions: records, actualInMonth: sum(records.filter(t => monthOf(t.date) === month).map(t => t.amount))});
+      const transfer = item.kind === 'expense' ? transferType(item.id, item.category) : null;
+      const field = item.kind === 'income' ? 'plannedIncome' : item.kind === 'debt' ? 'plannedDebt'
+        : transfer === 'education' ? 'plannedEducation' : transfer === 'investment' ? 'plannedInvestment' : 'plannedExpense';
+      row[field] += remainingAmount;
+      if (remainingAmount > 0) row.events.push({...item, planId: item.id, source: 'planned',
+        amount: remainingAmount, cashAmount: remainingAmount, plannedAmount: item.amount,
+        actualAmount, remainingAmount, status, complete, transfer});
+    }
+    for (const key of ['actualIncome', 'actualExpense', 'actualDebt', 'actualEducation', 'actualInvestment',
+      'plannedIncome', 'plannedExpense', 'plannedDebt', 'plannedEducation', 'plannedInvestment']) row[key] = round(row[key]);
+    row.income = round(row.actualIncome + row.plannedIncome);
+    row.expense = round(row.actualExpense + row.plannedExpense);
+    row.debt = round(row.actualDebt + row.plannedDebt);
+    row.education = round(row.actualEducation + row.plannedEducation);
+    row.investment = round(row.actualInvestment + row.plannedInvestment);
+    row.actualOut = sum([row.actualExpense, row.actualDebt, row.actualEducation, row.actualInvestment]);
+    row.plannedOut = sum([row.plannedExpense, row.plannedDebt, row.plannedEducation, row.plannedInvestment]);
+    row.out = sum([row.expense, row.debt, row.education, row.investment]);
+    row.net = round(row.income - row.out);
+    row.events.sort((a, b) => a.date.localeCompare(b.date) || a.source.localeCompare(b.source) || a.id.localeCompare(b.id));
+    return row;
+  }
+
+  function forecast(state, {months = 120} = {}) {
+    if (!Number.isSafeInteger(months) || months < 1 || months > MAX_ROWS) throw new RangeError(`Forecast months must be an integer from 1 to ${MAX_ROWS}.`);
+    const groups = groupActuals(state);
+    const openingKnown = typeof state.settings.openingCash === 'number' && Number.isFinite(state.settings.openingCash);
+    const openingUsed = openingKnown ? state.settings.openingCash : 0;
+    const today = localDate();
+    const recorded = groups.eligible.filter(t => t.date <= today);
+    const futureActuals = groups.eligible.filter(t => t.date > today);
+    const actualNet = sum(recorded.map(t => t.type === 'income' ? t.amount : -t.amount));
+    const recordedCash = openingKnown ? round(openingUsed + actualNet) : null;
+    const rows = [];
+    let cash = openingUsed;
+    let minimumCash = openingUsed;
+    let firstShortfall = null;
+    for (let index = 0; index < months; index++) {
+      const month = addMonths(state.settings.startMonth, index);
+      const row = monthlyRow(state, month, groups);
+      cash = round(cash + row.net);
+      row.cash = cash;
+      rows.push(row);
+      minimumCash = Math.min(minimumCash, cash);
+      if (!firstShortfall && cash < 0) firstShortfall = row;
+    }
+    let premiums = 0;
+    for (let index = 0; index < 12; index++) {
+      premiums += sum(occurrences(state, addMonths(state.settings.startMonth, index))
+        .filter(p => p.kind === 'expense' && p.category === 'premium' && p.frequency === 'annual').map(p => p.amount));
+    }
+    const warnings = [];
+    if (!openingKnown) warnings.push('Opening accessible cash is unknown. Forecast cash starts provisionally at zero; recorded cash is not a known bank balance.');
+    if (firstShortfall) warnings.push('The plan has an unfunded cash requirement. A negative projection does not create a loan or overdraft.');
+    if (futureActuals.length) warnings.push(`${futureActuals.length} future-dated actual record(s) appear in the forecast, but are excluded from recorded cash until their date.`);
+    if (groups.eligible.length !== state.transactions.length) warnings.push('Records before the opening snapshot month are excluded from cash, matching and principal tracking.');
+    const expected = state.plans.some(p => p.enabled && p.kind === 'income' && p.expected);
+    if (state.settings.includeExpected && expected) warnings.push('Expected income is included. Income amounts need to represent usable cash after tax and business costs.');
+    if (state.settings.scenario.bonusEnabled || state.settings.scenario.raiseEnabled) warnings.push('Bonus and salary growth are optional assumptions, not guaranteed receipts. Home comparison prepayments do not automatically change this cash forecast.');
+    const planMap = new Map(state.plans.map(p => [p.id, p]));
+    let unmatched = 0;
+    for (const t of groups.eligible) {
+      if (!t.planId) continue;
+      const p = planMap.get(t.planId);
+      if (p && !planOccurrence({...p, enabled: true}, t.period, state.settings, {ignoreExpected: true})) unmatched++;
+      if (!p && !SYNTHETIC.has(t.planId)) unmatched++;
+    }
+    if (unmatched) warnings.push(`${unmatched} linked actual record(s) have no occurrence in their assigned period. Their cash is counted, but they do not settle another month's plan.`);
+    const scheduledDebtTotal = sum(rows.map(r => r.debt));
+    return {rows, openingKnown, openingUsed, firstShortfall, minimumCash: round(minimumCash),
+      requiredFunding: round(Math.max(0, -minimumCash)), recordedCash, recordedThrough: today,
+      recordedIncome: sum(recorded.filter(t => t.type === 'income').map(t => t.amount)),
+      recordedOut: sum(recorded.filter(t => t.type !== 'income').map(t => t.amount)),
+      futureActualCount: futureActuals.length, scheduledDebtTotal,
+      actualDebtTotal: sum(rows.map(r => r.actualDebt)), remainingDebtTotal: sum(rows.map(r => r.plannedDebt)),
+      annualPremiumReserve: round(premiums / 12), warnings, timing: 'month-end'};
+  }
+
+  function monthSummary(state, month) {
+    const distance = monthDistance(state.settings.startMonth, month);
+    if (distance < 0) {
+      const row = blankRow(month);
+      row.cash = state.settings.openingCash === null ? 0 : state.settings.openingCash;
+      row.out = 0;
+      return row;
+    }
+    return forecast(state, {months: distance + 1}).rows[distance];
+  }
+
+  function loanSummary(state) {
+    const today = localDate();
+    const eligible = state.transactions.filter(t => t.type === 'debt'
+      && monthOf(t.date) >= state.settings.startMonth && t.date <= today);
+    const loans = state.loans.map(loan => {
+      const records = eligible.filter(t => t.loanId === loan.id);
+      const principalPaid = sum(records.filter(t => t.principal !== null).map(t => t.principal));
+      const missing = [];
+      if (loan.apr === null) missing.push('rate');
+      if (loan.emi === null) missing.push('EMI');
+      return {...loan, principalPaid, cashPaid: sum(records.map(t => t.amount)),
+        trackedBalance: round(Math.max(0, loan.balance - principalPaid)),
+        principalExceedsOpening: principalPaid > loan.balance, missing};
+    });
+    const knownPrincipalPaid = sum(loans.map(l => l.principalPaid));
+    const unallocatedDebtPayments = sum(eligible.filter(t => t.principal === null).map(t => t.amount));
+    const warnings = [];
+    if (loans.some(l => l.missing.length)) warnings.push('Some individual rates or EMIs are unknown. No complete debt-free date is calculated from these snapshots.');
+    if (loans.some(l => l.aprAssumed)) warnings.push('Some interest rates are approximate assumptions.');
+    if (unallocatedDebtPayments) warnings.push('Some recorded debt payments have no principal allocation, so they do not reduce tracked principal.');
+    if (loans.some(l => l.principalExceedsOpening)) warnings.push('Recorded principal exceeds an opening balance. Check the snapshot date and allocations before relying on the tracked balance.');
+    return {openingTotal: sum(loans.map(l => l.balance)), knownPrincipalPaid,
+      trackedBalance: sum(loans.map(l => l.trackedBalance)),
+      incomplete: loans.filter(l => l.missing.length && l.trackedBalance > 0).map(l => l.name),
+      unknownRate: loans.filter(l => l.apr === null && l.trackedBalance > 0).map(l => l.name),
+      unknownEmi: loans.filter(l => l.emi === null && l.trackedBalance > 0).map(l => l.name),
+      unallocatedDebtPayments, unlinkedDebtPayments: sum(eligible.filter(t => !t.loanId).map(t => t.amount)),
+      loans, warnings, recordedThrough: today, payoffMonth: null,
+      method: 'Opening principal less explicitly recorded principal; accrued interest and unallocated payments are not inferred.'};
+  }
+
+  function payment(principal, apr, months) {
+    if (typeof principal !== 'number' || !Number.isFinite(principal) || principal < 0
+      || typeof apr !== 'number' || !Number.isFinite(apr) || apr < 0
+      || !Number.isSafeInteger(months) || months <= 0) throw new RangeError('Payment needs nonnegative principal and APR, and a positive integer number of months.');
+    if (principal === 0) return 0;
+    if (apr === 0) return principal / months;
+    const rate = apr / 1200;
+    return principal * rate / -Math.expm1(-months * Math.log1p(rate));
+  }
+
+  function homeScenarios(state) {
+    const home = state.settings.homeComparison;
+    const sc = state.settings.scenario;
+    if (!(home.principal > 0)) return [];
+    const baseMonths = Math.round(home.baseYears * 12);
+    const basePayment = payment(home.principal, home.rate, baseMonths);
+    const variants = [
+      {id: 'none', label: 'Base payment only', salary: false, bonus: false},
+      {id: 'bonus', label: 'Bonus prepayments', salary: false, bonus: true},
+      {id: 'raise', label: 'Salary-growth prepayments', salary: true, bonus: false},
+      {id: 'both', label: 'Bonus and salary-growth prepayments', salary: true, bonus: true}
+    ];
+    return variants.map(variant => {
+      let balance = home.principal;
+      let interestTotal = 0;
+      let totalPaid = 0;
+      let extraPaid = 0;
+      const rows = [];
+      for (let index = 0; index < Math.min(baseMonths + 1, MAX_ROWS + 1) && balance > 0.000001; index++) {
+        const month = addMonths(home.startMonth, index);
+        const year = Number(month.slice(0, 4));
+        const monthNumber = Number(month.slice(5, 7));
+        const opening = balance;
+        const interest = balance * home.rate / 1200;
+        interestTotal += interest;
+        balance += interest;
+        const regular = Math.min(balance, basePayment);
+        balance -= regular;
+        const extrasAllowed = month >= sc.extraStartMonth;
+        let salaryExtra = 0;
+        if (extrasAllowed && variant.salary) {
+          // Each enabled monthly salary rule is the baseline at that month.
+          // Explicit salary phases remain separate from automatic growth.
+          const salaryBase = state.plans.filter(p => p.kind === 'income' && p.category === 'salary' && p.frequency === 'monthly')
+            .map(p => planOccurrence(p, month, state.settings, {noRaise: true, ignoreExpected: true}))
+            .filter(Boolean).reduce((total, p) => total + p.amount, 0);
+          salaryExtra = Math.max(0, salaryBase * (raiseFactor(state.settings, month) - 1) * sc.prepayShare / 100);
+        }
+        const raisePaid = Math.min(balance, salaryExtra);
+        balance -= raisePaid;
+        const bonusExtra = extrasAllowed && variant.bonus && year >= sc.bonusStartYear && monthNumber === sc.bonusMonth
+          ? sc.annualBonus * sc.prepayShare / 100 : 0;
+        const bonusPaid = Math.min(balance, bonusExtra);
+        balance -= bonusPaid;
+        if (balance < 0.000001) balance = 0;
+        const paid = regular + raisePaid + bonusPaid;
+        totalPaid += paid;
+        extraPaid += raisePaid + bonusPaid;
+        rows.push({month, opening, interest, regular, salaryExtra: raisePaid, bonusExtra: bonusPaid,
+          extra: raisePaid + bonusPaid, payment: paid, principalPaid: paid - interest, balance});
+      }
+      const last = rows[rows.length - 1];
+      return {id: variant.id, label: variant.label, payment: basePayment,
+        payoffMonth: last && last.balance === 0 ? last.month : null,
+        interest: interestTotal, months: rows.length, totalPaid, extraPaid, rows,
+        principal: home.principal, apr: home.rate, extraStartMonth: sc.extraStartMonth,
+        scope: 'Hypothetical home loans only; affordability and other debts are not modelled.'};
+    });
+  }
+
+  return Object.freeze({emptyState, validateState, forecastMonths, localDate, monthOf, addMonths, monthDistance,
+    money, occurrences, forecast, monthSummary, loanSummary, payment, homeScenarios});
+});
+
+  </script>
+  <script>
+globalThis.CLEARPATH_SEED = null;
+  </script>
+  <script>
+(function () {
+  'use strict';
+  const STORE = 'clearpath.money.v1';
+  const $ = id => document.getElementById(id);
+  const clone = value => JSON.parse(JSON.stringify(value));
+  const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const number = value => Number(value || 0);
+  const money = (value, compact = false) => {
+    if (value == null || !Number.isFinite(value)) return 'Not set';
+    const sign = value < 0 ? '−' : '';
+    const v = Math.abs(value);
+    if (compact && v >= 10000000) return sign + '₹' + (v / 10000000).toFixed(2) + 'Cr';
+    if (compact && v >= 100000) return sign + '₹' + (v / 100000).toFixed(2) + 'L';
+    return sign + '₹' + Math.round(v).toLocaleString('en-IN');
+  };
+  const monthLabel = m => new Date(Number(m.slice(0,4)), Number(m.slice(5,7))-1, 1).toLocaleDateString('en-IN', {month:'short',year:'numeric'});
+  const dateLabel = d => new Date(d + 'T12:00:00').toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'});
+  const uid = () => (globalThis.crypto?.randomUUID ? crypto.randomUUID() : 'id-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2));
+  let today = CP.localDate();
+  let storedSnapshot, unreadableSavedData = false;
+  let state, view = 'home', planTab = 'forecast', selectedMonth, forecastYear = today.slice(0,4), activityFilter = 'all', activitySearch = '', undoState = null, returnFocus = null, toastTimer, lastBackup = null, storageProblem = '', pendingImport = null, forecastCache = null;
+  const icon = name => {
+    const paths = {plus:'M12 5v14M5 12h14',arrow:'M5 12h14m-5-5 5 5-5 5',up:'m7 14 5-5 5 5M12 9v10',down:'m7 10 5 5 5-5M12 15V5',edit:'m15 5 4 4M4 20l4-1L20 7a2.8 2.8 0 0 0-4-4L4 15z',shield:'M12 3 4 6v5c0 5 4 8 8 10 4-2 8-5 8-10V6zM8 12l3 3 5-6',check:'m5 12 4 4L19 6',download:'M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5',wallet:'M4 6h15v14H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h13v3m-1 6h5v5h-5z',calendar:'M5 5h14v16H5zM8 3v4m8-4v4M5 10h14',alert:'M12 3 2 21h20zM12 9v5m0 3v1',close:'m6 6 12 12M6 18 18 6'};
+    return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + (paths[name] || paths.arrow) + '"/></svg>';
+  };
+  const btn = (label, action, klass='secondary', attrs='') => '<button class="button '+klass+'" data-action="'+action+'" '+attrs+'>'+label+'</button>';
+  const field = (label,name,value='',type='text',opts='') => '<label class="field"><span>'+label+'</span><input name="'+name+'" type="'+type+'" value="'+esc(value ?? '')+'" '+opts+'></label>';
+  const selectField = (label,name,items,value) => '<label class="field"><span>'+label+'</span><select name="'+name+'" aria-label="'+esc(label)+'">'+items.map(([v,l])=>'<option value="'+esc(v)+'"'+(String(v)===String(value)?' selected':'')+'>'+esc(l)+'</option>').join('')+'</select></label>';
+  const checkField = (label,name,checked,help='') => '<label class="check-field"><input type="checkbox" name="'+name+'"'+(checked?' checked':'')+'><span>'+label+(help?'<small>'+help+'</small>':'')+'</span></label>';
+  const note = (html,klass='') => '<div class="notice '+klass+'">'+html+'</div>';
+  const badge = (text,klass='') => '<span class="tag '+klass+'">'+esc(text)+'</span>';
+  const clean = raw => {
+    const r = CP.validateState(raw);
+    if (!r.ok) throw new Error(r.errors.slice(0,4).join(' · '));
+    return r.state;
+  };
+  function load() {
+    try {
+      const saved = localStorage.getItem(STORE);
+      storedSnapshot = saved;
+      if (saved !== null) { state = clean(JSON.parse(saved)); }
+      else { state = clean(globalThis.CLEARPATH_SEED ? clone(globalThis.CLEARPATH_SEED) : CP.emptyState()); }
+    } catch (err) {
+      unreadableSavedData = true;
+      state = clean(globalThis.CLEARPATH_SEED ? clone(globalThis.CLEARPATH_SEED) : CP.emptyState());
+      storageProblem = 'Saved data could not be read. Your existing copy has not been overwritten. Export a backup or restore a valid file before continuing. ' + err.message;
+    }
+    selectedMonth = today.slice(0,7) < state.settings.startMonth ? state.settings.startMonth : today.slice(0,7);
+    try { lastBackup = localStorage.getItem(STORE + '.backup'); } catch (_) {}
+    window.addEventListener('storage', e => { if (e.key === STORE || e.key === null) { storageProblem='Your data changed in another tab. Reload this page before making more changes.';showPersistentNotice(storageProblem, true); } });
+  }
+  function save(message, previous) {
+    state.updatedAt = new Date().toISOString();
+    let checked;
+    try {
+      checked = clean(state);
+      if (storageProblem) throw new Error('Storage needs attention. Export your current work first.');
+      if (storedSnapshot === undefined || localStorage.getItem(STORE) !== storedSnapshot) {
+        storageProblem = 'Saved data changed or could not be read. Reload before saving to avoid overwriting another copy.';
+        throw new Error(storageProblem);
+      }
+      const serialized = JSON.stringify(checked);
+      localStorage.setItem(STORE, serialized);
+      storedSnapshot = serialized;
+    } catch (err) {
+      if (previous) state = previous;
+      forecastCache = null;
+      render();
+      showPersistentNotice('Changes were not saved. ' + err.message + ' Export a backup and check browser storage.', true);
+      toast('Could not save. Your previous data is still intact.');
+      return false;
+    }
+    // Once persistence succeeds, a rendering error must not roll memory back
+    // to an older state while the browser already contains the new one.
+    unreadableSavedData = false;
+    state = checked;
+    if (previous) undoState = previous;
+    forecastCache = null;
+    render();
+    toast(message || 'Saved on this device', !!previous);
+    return true;
+  }
+  function mutate(fn, message) { const prev=clone(state);try { fn(); } catch (err) {state=prev;forecastCache=null;throw err;}return save(message,prev); }
+  function projection() { if(!forecastCache) forecastCache=CP.forecast(state,{months:CP.forecastMonths(state)}); return forecastCache; }
+  function currentRow() { return projection().rows.find(r=>r.month===selectedMonth) || CP.monthSummary(state,selectedMonth); }
+  function showPersistentNotice(message, bad=false) {
+    let el=$('storageNotice');
+    if(!el){el=document.createElement('div');el.id='storageNotice';el.setAttribute('role','alert');$('main').prepend(el);}
+    el.className='notice '+(bad?'bad':'warn'); el.textContent=message; el.hidden=false;
+  }
+  function toast(message,undo=false) { clearTimeout(toastTimer);$('toast').hidden=false; $('toast').innerHTML='<span>'+esc(message)+'</span>'+(undo?'<button data-action="undo">Undo</button>':'');$('toast').classList.add('show');toastTimer=setTimeout(()=>{$('toast').classList.remove('show');$('toast').hidden=true;},5500); }
+  function heading(kicker,title,sub,action='') { return '<div class="page-head"><div><p class="eyebrow">'+kicker+'</p><h1>'+title+'</h1>'+(sub?'<p class="muted">'+sub+'</p>':'')+'</div>'+action+'</div>'; }
+  function monthPicker() { return '<label class="month-picker"><span class="screen-reader-only">View month</span><input aria-label="View month" type="month" id="viewMonth" min="'+state.settings.startMonth+'" max="'+CP.addMonths(state.settings.startMonth,CP.forecastMonths(state)-1)+'" value="'+selectedMonth+'"></label>'; }
+  function render() {
+    if (today !== CP.localDate()) { today = CP.localDate(); forecastCache = null; }
+    const lastMonth = CP.addMonths(state.settings.startMonth, CP.forecastMonths(state) - 1);
+    selectedMonth = selectedMonth < state.settings.startMonth ? state.settings.startMonth : selectedMonth > lastMonth ? lastMonth : selectedMonth;
+    document.querySelectorAll('[data-view]').forEach(el=>{el.classList.toggle('active',el.dataset.view===view);if(el.dataset.view===view)el.setAttribute('aria-current','page');else el.removeAttribute('aria-current');});
+    $('saveStatus').textContent=storageProblem?'Storage needs attention':'Saved on this device';
+    const html = {home:homeView,activity:activityView,plan:planView,loans:loansView,settings:settingsView}[view]();
+    $('content').innerHTML=html;
+    if(storageProblem) showPersistentNotice(storageProblem,true);
+    document.title='Clearpath · '+({home:'Overview',activity:'Activity',plan:'Your plan',loans:'Loans',settings:'Settings'}[view]);
+  }
+  function emptyOnboarding() {
+    return '<section class="hero onboarding"><div class="hero-main"><p class="eyebrow">YOUR MONEY. YOUR PACE.</p><h1>Make room for<br>what matters.</h1><p>Income, everyday spending, debt and bigger plans. All together, saved only in this browser.</p><div class="hero-actions">'+btn(icon('download')+' Import my setup','import','primary')+btn('Start a fresh plan','opening','secondary')+'</div></div><div class="hero-aside"><span class="hero-symbol">'+icon('wallet')+'</span><h2>A plan that moves<br>with your life.</h2><p>Import your private setup file to bring in your figures, then log an expense in a few taps.</p></div></section>'+note('<strong>Already have your Clearpath setup?</strong> Choose <b>Import my setup</b> and select your private JSON file. Keep that file on your device; it does not belong in your GitHub repository.');
+  }
+  function homeView() {
+    const p=projection(),r=currentRow(),lo=CP.loanSummary(state),known=state.settings.openingCash!==null;
+    if(!state.plans.length&&!state.loans.length&&!state.transactions.length&&state.settings.openingCash===null&&!state.settings.name) return emptyOnboarding()+'<div class="grid-3 intro-grid">'+['Know your cash','Plan the big costs','See a path out of debt'].map((x,i)=>'<div class="card"><p class="eyebrow">0'+(i+1)+'</p><h2>'+x+'</h2><p class="muted">'+['Separate actual entries from expected income and bills.','Set dates for annual premiums, school fees and one-off expenses.','Edit loan terms and compare a steady plan with extra repayments.'][i]+'</p></div>').join('')+'</div>';
+    const out=r.expense+r.debt+r.education+r.investment;
+    const short=p.rows.slice(0,24).reduce((a,b)=>b.cash<a.cash?b:a,p.rows[0]);
+    const actualCash=p.recordedCash;
+    const next=upcoming().slice(0,4);
+    const incomeTarget=state.plans.some(x=>x.expected&&x.kind==='income'&&x.enabled);
+    return heading('YOUR OVERVIEW','A little more breathing room.', 'A living plan for your cash, your family and your debt.', monthPicker())+
+      '<section class="hero"><div class="hero-main"><div class="row"><p class="eyebrow">'+monthLabel(selectedMonth).toUpperCase()+' · MONTHLY PLAN</p>'+badge('Forecast')+'</div><p class="hero-value">'+money(r.net)+'</p><p class="hero-caption">'+(r.net>=0?'left after this month’s planned outflows':'more needed for this month’s planned outflows')+'</p><div class="hero-actions">'+btn(icon('plus')+' Add expense','add-expense','primary')+btn(icon('plus')+' Add income','add-income','secondary')+'</div><p class="hero-footnote">Logging an expense updates your budget and forecast immediately.</p></div><div class="hero-aside"><div class="hero-metric"><span>Income</span><strong>'+money(r.income)+'</strong></div><div class="hero-metric"><span>Living & other costs</span><strong>'+money(r.expense)+'</strong></div><div class="hero-metric"><span>Loan payments</span><strong>'+money(r.debt)+'</strong></div><div class="hero-metric"><span>Education & investing</span><strong>'+money(r.education+r.investment)+'</strong></div><div class="allocation-bar" aria-hidden="true"><i style="width:'+Math.min(100,r.income?out/r.income*100:100)+'%"></i></div><p class="small">'+(incomeTarget&&state.settings.includeExpected?'Includes income targets. Review them in Your plan.':'Based on the income sources currently enabled.')+'</p></div></section>'+
+      (!known?note('<div class="row"><div><strong>Add your opening cash to check what is affordable.</strong><p>The forecast currently starts at ₹0 as a placeholder. It is not your bank balance.</p></div>'+btn('Set opening cash','opening','secondary')+'</div>','warn'):'')+
+      '<div class="grid-3 kpi-grid"><div class="stat"><span class="metric-label">Recorded cash</span><strong class="stat-value">'+(known?money(actualCash,true):'Not set')+'</strong><p class="small muted">Opening cash + entries you have logged</p>'+btn('View activity','go-activity','ghost')+'</div><div class="stat"><span class="metric-label">Tracked debt</span><strong class="stat-value">'+money(lo.trackedBalance ?? lo.openingTotal,true)+'</strong><p class="small muted">Statement balances less known principal paid</p>'+btn('View loans','go-loans','ghost')+'</div><div class="stat"><span class="metric-label">Liquid reserve goal</span><strong class="stat-value">'+money(state.settings.reserveTarget,true)+'</strong><p class="small muted">Minimum cash floor '+money(state.settings.liquidityFloor,true)+'</p>'+btn('Edit cash goals','go-settings','ghost')+'</div></div>'+
+      '<div class="grid-2"><section class="card"><div class="card-head"><div><p class="eyebrow">LOOKING AHEAD</p><h2>Your cash runway</h2></div>'+btn('Full forecast '+icon('arrow'),'go-plan','ghost')+'</div>'+cashChart(p.rows.slice(0,18),240)+
+      (short.cash<0?'<div class="chart-insight warn-text"><strong>'+money(-short.cash,true)+' funding gap by '+monthLabel(short.month)+'</strong><p class="small">'+(known?'Beyond your entered opening cash':'With provisional zero opening cash')+'. A negative forecast is a funding gap; no new loan is assumed.</p></div>':'<div class="chart-insight"><strong>Lowest planned cash: '+money(short.cash,true)+'</strong><p class="small">'+monthLabel(short.month)+' · figures depend on the income and bill assumptions.</p></div>')+'</section><section class="card"><div class="card-head"><div><p class="eyebrow">ON THE CALENDAR</p><h2>Next planned payments</h2></div></div>'+(next.length?next.map(e=>'<div class="list-row"><span class="date-tile"><b>'+new Date(e.date+'T12:00:00').getDate()+'</b><small>'+new Date(e.date+'T12:00:00').toLocaleDateString('en-IN',{month:'short'})+'</small></span><div class="row-main"><strong>'+esc(e.name)+'</strong><span class="small muted">'+(e.expected?'Expected · ':'')+esc(e.kind==='debt'?'Debt payment':e.category)+'</span></div><div class="row-value"><strong>'+money(e.amount)+'</strong><button class="text-link" data-action="pay-plan" data-id="'+esc(e.id)+'" data-period="'+e.period+'">Record payment</button></div></div>').join(''):'<p class="empty">No upcoming payments. Add one in Your plan.</p>')+'</section></div>'+
+      '<section class="card goal-strip"><div><p class="eyebrow">STEADY PROGRESS</p><h2>Your debt-free goal: December '+state.settings.targetYear+'.</h2><p class="muted">Protect your cash floor, plan for education, and use bonuses or raises only when they arrive.</p></div>'+btn('Compare repayment paths '+icon('arrow'),'scenarios','secondary')+'</section>';
+  }
+  function upcoming() {
+    const list=[];
+    for(let i=0;i<15;i++) for(const e of CP.occurrences(state,CP.addMonths(today.slice(0,7),i))) {
+      if(e.kind==='income'||e.date<today||['education','investment'].includes(e.category))continue;
+      const ts=state.transactions.filter(t=>t.planId===e.id&&t.period===e.period&&t.date>=state.settings.startMonth+'-01');
+      if(ts.some(t=>t.complete))continue;
+      const paid=ts.reduce((s,t)=>s+t.amount,0);const remaining=Math.max(0,e.amount-paid);
+      if(remaining)list.push({...e,amount:remaining});
+    }
+    return list.sort((a,b)=>a.date.localeCompare(b.date));
+  }
+  function cashChart(rows,height=240) {
+    if(!rows.length)return '';
+    const viewport=document.documentElement.clientWidth||window.innerWidth||1024;
+    const w=height===240?(viewport>=760?Math.min(510,(viewport-104)/2):Math.max(260,viewport-72)):Math.max(260,Math.min(1000,viewport-72));
+    const h=height,pad={l:55,r:18,t:18,b:38},vals=rows.map(r=>r.cash),floor=state.settings.liquidityFloor;
+    let min=Math.min(0,...vals),max=Math.max(floor,...vals,1);const range=max-min||1;min-=range*.08;max+=range*.08;
+    const x=i=>pad.l+i*(w-pad.l-pad.r)/Math.max(1,rows.length-1),y=v=>pad.t+(max-v)/(max-min)*(h-pad.t-pad.b);
+    const points=rows.map((r,i)=>x(i)+','+y(r.cash)).join(' '),zero=y(0);
+    const ticks=[min<0?Math.min(...vals):0,(max+min)/2,Math.max(...vals,floor)];
+    return '<div class="chart"><svg viewBox="0 0 '+w+' '+h+'" role="img" aria-label="Projected available cash from '+monthLabel(rows[0].month)+' to '+monthLabel(rows.at(-1).month)+'. Lowest '+money(Math.min(...vals))+'."><title>Projected available cash, month end</title>'+ticks.map(v=>'<line class="chart-grid" x1="'+pad.l+'" y1="'+y(v)+'" x2="'+(w-pad.r)+'" y2="'+y(v)+'"/><text class="chart-label" x="'+(pad.l-9)+'" y="'+(y(v)+4)+'" text-anchor="end">'+esc(money(v,true))+'</text>').join('')+'<line class="chart-zero" x1="'+pad.l+'" y1="'+zero+'" x2="'+(w-pad.r)+'" y2="'+zero+'"/><polygon class="chart-area" points="'+x(0)+','+zero+' '+points+' '+x(rows.length-1)+','+zero+'"/><line class="chart-floor" x1="'+pad.l+'" y1="'+y(floor)+'" x2="'+(w-pad.r)+'" y2="'+y(floor)+'"/><polyline class="chart-line" points="'+points+'"/>'+rows.map((r,i)=>'<circle class="chart-point '+(r.cash<0?'negative':'')+'" cx="'+x(i)+'" cy="'+y(r.cash)+'" r="3"><title>'+monthLabel(r.month)+': '+money(r.cash)+'</title></circle>').join('')+[0,Math.floor((rows.length-1)/2),rows.length-1].map(i=>'<text class="chart-label" x="'+x(i)+'" y="'+(h-10)+'" text-anchor="'+(i===0?'start':i===rows.length-1?'end':'middle')+'">'+monthLabel(rows[i].month)+'</text>').join('')+'</svg><div class="chart-legend"><span><i class="legend-dot"></i> Month-end available cash</span><span><i class="legend-line"></i> Cash floor</span></div></div>';
+  }
+  function activityView() {
+    const tx=state.transactions.filter(t=>(activityFilter==='all'||t.type===activityFilter)&&(!activitySearch||(t.description+' '+t.amount+' '+t.date).toLowerCase().includes(activitySearch.toLowerCase()))).sort((a,b)=>b.date.localeCompare(a.date)||b.id.localeCompare(a.id));
+    const ins=tx.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0),outs=tx.filter(t=>t.type!=='income').reduce((s,t)=>s+t.amount,0);
+    return heading('THE REAL NUMBERS','Your activity','Only money you have actually recorded. Expected payments stay in Your plan.', '<div class="inline-actions">'+btn('Add expense','add-expense','primary')+btn('Add income','add-income','secondary')+'</div>')+
+    '<section class="card"><div class="toolbar"><div class="segmented" role="group" aria-label="Activity type">'+[['all','All'],['income','Income'],['expense','Expenses'],['debt','Loans']].map(([id,l])=>'<button data-action="activity-filter" data-id="'+id+'" aria-pressed="'+(activityFilter===id)+'" class="'+(activityFilter===id?'active':'')+'">'+l+'</button>').join('')+'</div><label class="search-field"><span class="screen-reader-only">Search activity</span><input id="activitySearch" type="search" placeholder="Search entries" value="'+esc(activitySearch)+'"></label></div><div class="activity-summary"><span>'+tx.length+' entries</span><span class="amount-income">In '+money(ins)+'</span><span>Out '+money(outs)+'</span></div><div id="activityRows">'+(tx.length?tx.map(t=>{const plan=state.plans.find(x=>x.id===t.planId);return '<div class="list-row"><span class="entry-icon '+(t.type==='income'?'income':'')+'">'+icon(t.type==='income'?'down':t.type==='debt'?'wallet':'up')+'</span><div class="row-main"><strong>'+esc(t.description||plan?.name||({income:'Income',expense:'Expense',debt:'Loan payment'}[t.type]))+'</strong><span class="small muted">'+dateLabel(t.date)+(t.planId?' · '+esc(plan?.name||'Goal / scenario'):' · Outside the plan')+'</span>'+(t.principal!=null?'<span class="small muted">Principal '+money(t.principal)+'</span>':'')+'</div><div class="row-value"><strong class="'+(t.type==='income'?'amount-income':'')+'">'+(t.type==='income'?'+':'−')+money(t.amount)+'</strong><button class="text-link" data-action="edit-entry" data-id="'+esc(t.id)+'">Edit</button></div></div>';}).join(''):'<div class="empty"><h2>No entries yet.</h2><p>Add your first income or expense. Planned amounts won’t be marked as paid until you record them.</p>'+btn('Add an expense','add-expense','secondary')+'</div>')+'</div></section>';
+  }
+  function planView() {
+    return heading('YOUR PLAN','See what is possible.','Change an amount or date and the cash forecast updates with it.')+
+      '<nav class="tabs" aria-label="Plan sections">'+[['forecast','Cash forecast'],['recurring','Income & budgets'],['events','Big payments'],['scenarios','Repayment paths']].map(([id,l])=>'<button data-action="plan-tab" data-id="'+id+'" class="'+(planTab===id?'active':'')+'" aria-pressed="'+(planTab===id)+'">'+l+'</button>').join('')+'</nav>'+({forecast:forecastView,recurring:recurringView,events:eventsView,scenarios:scenariosView}[planTab])();
+  }
+  function forecastView() {
+    const p=projection(),rows=p.rows.filter(r=>r.month<=state.settings.targetYear+'-12'),totalGoal=rows.reduce((s,r)=>s+r.education+r.investment,0),worst=rows.reduce((a,b)=>a.cash<b.cash?a:b,rows[0]);
+    const years=[...new Set(rows.map(r=>r.month.slice(0,4)))];if(!years.includes(forecastYear)&&forecastYear!=='all')forecastYear=years[0];
+    const visibleRows=forecastYear==='all'?rows:rows.filter(r=>r.month.startsWith(forecastYear));
+    return '<div class="grid-3"><div class="stat"><span class="metric-label">Lowest projected cash</span><strong class="stat-value '+(worst.cash<0?'amount-expense':'')+'">'+money(worst.cash,true)+'</strong><p class="small muted">'+monthLabel(worst.month)+'</p></div><div class="stat"><span class="metric-label">Additional funding needed</span><strong class="stat-value">'+money(Math.max(0,-worst.cash),true)+'</strong><p class="small muted">To prevent a negative month-end balance</p></div><div class="stat"><span class="metric-label">Education & investing set aside</span><strong class="stat-value">'+money(totalGoal,true)+'</strong><p class="small muted">Contributions only; no return assumed</p></div></div>'+
+      '<section class="card"><div class="card-head"><div><h2>Cash through '+state.settings.targetYear+'</h2><p class="small muted">After planned bills, EMIs and goal contributions</p></div>'+btn('Edit assumptions','go-settings','secondary')+'</div>'+cashChart(rows,300)+'</section>'+
+      note('<strong>'+ (state.settings.openingCash===null?'Opening cash is not set. ':'')+'</strong>Scheduled items are forecasts. Actual entries replace the matching planned amount; they are not added twice. Annual premiums are paid in their due month. The '+money(p.annualPremiumReserve)+' monthly premium provision is guidance, not another expense.','')+
+      (p.warnings?.length?'<details class="card"><summary>Check '+p.warnings.length+' planning assumptions</summary><ul>'+p.warnings.map(w=>'<li>'+esc(typeof w==='string'?w:w.message||JSON.stringify(w))+'</li>').join('')+'</ul></details>':'')+
+      '<section class="card"><div class="card-head"><h2>Month by month</h2><label class="field"><span class="screen-reader-only">Forecast table year</span><select id="forecastYear" aria-label="Forecast table year">'+years.map(y=>'<option value="'+y+'"'+(forecastYear===y?' selected':'')+'>'+y+'</option>').join('')+'<option value="all"'+(forecastYear==='all'?' selected':'')+'>All years</option></select></label></div><div class="table-wrap"><table><thead><tr><th>Month</th><th>Actual in</th><th>Actual out</th><th>Remaining in</th><th>Remaining out</th><th>Total income</th><th>Expenses</th><th>Debt paid</th><th>Goals</th><th>Net</th><th>Cash left</th></tr></thead><tbody>'+visibleRows.map(r=>'<tr class="'+(r.cash<0?'negative-row':'')+'"><th scope="row"><button class="table-link" data-action="show-month" data-month="'+r.month+'">'+monthLabel(r.month)+'</button></th><td>'+money(r.actualIncome)+'</td><td>'+money(r.actualOut)+'</td><td>'+money(r.plannedIncome)+'</td><td>'+money(r.plannedOut)+'</td><td>'+money(r.income)+'</td><td>'+money(r.expense)+'</td><td>'+money(r.debt)+'</td><td>'+money(r.education+r.investment)+'</td><td>'+money(r.net)+'</td><td><strong>'+money(r.cash)+'</strong></td></tr>').join('')+'</tbody></table></div><p class="small muted table-note">Monthly timing is approximate. A bill due before payday can require more cash than this month-end view shows. EMI totals continue until their plan end date; the app does not invent a loan closure date.</p></section>';
+  }
+  function recurringView() {
+    const sections=[['income','Income sources'],['expense','Living costs & budgets'],['debt','Scheduled loan payments']];
+    return '<div class="section-title"><p class="muted">Separate rows let you schedule a future change in income or spending.</p>'+btn(icon('plus')+' Add a plan','add-plan','primary')+'</div>'+sections.map(([kind,title])=>'<section class="card"><div class="card-head"><h2>'+title+'</h2>'+btn('Add','add-plan','ghost','data-kind="'+kind+'"')+'</div>'+state.plans.filter(p=>p.kind===kind&&p.frequency==='monthly').map(planRow).join('')+(state.plans.some(p=>p.kind===kind&&p.frequency==='monthly')?'':'<p class="empty">No monthly plans yet.</p>')+'</section>').join('')+
+      note('<strong>Expected income is a target.</strong> Turn it off in Settings to stress-test your plan. Check the amount and duration of family support before relying on it.')+
+      note('<strong>Budget entries work together.</strong> When you add a household expense, leave it linked to that month’s household budget. Only spending beyond the budget increases the forecast total.');
+  }
+  function planRow(p) {
+    const range=p.frequency==='once'?dateLabel(p.start):monthLabel(p.start.slice(0,7))+(p.end?' – '+monthLabel(p.end.slice(0,7)):' onward');
+    return '<div class="list-row'+(!p.enabled?' disabled-row':'')+'"><span class="entry-icon '+(p.kind==='income'?'income':'')+'">'+icon(p.kind==='income'?'down':p.kind==='debt'?'wallet':'calendar')+'</span><div class="row-main"><strong>'+esc(p.name)+'</strong><span class="small muted">'+range+' · '+esc(p.frequency)+'</span><div class="tag-row">'+(p.expected?badge('Expected','warn'):'')+(!p.enabled?badge('Paused'):'')+'</div></div><div class="row-value"><strong>'+money(p.amount)+'</strong><button class="text-link" data-action="edit-plan" data-id="'+esc(p.id)+'">Edit</button></div></div>';
+  }
+  function eventsView() {
+    const ps=state.plans.filter(p=>p.frequency!=='monthly').sort((a,b)=>a.start.localeCompare(b.start));
+    return '<div class="section-title"><p class="muted">Annual premiums and one-off costs, with room to move dates.</p>'+btn(icon('plus')+' Add payment','add-event','primary')+'</div><section class="card">'+(ps.length?ps.map(p=>planRow(p)+(p.note?'<p class="plan-note small muted">'+esc(p.note)+'</p>':'')).join(''):'<p class="empty">No big payments planned yet.</p>')+'</section>'+note('<strong>Check assumed dates in each payment’s notes.</strong> Where only a month was supplied, the payment day is a placeholder. Update it when you know the exact due date.');
+  }
+  function loansView() {
+    const lo=CP.loanSummary(state),paymentPlans=state.plans.filter(p=>p.kind==='debt'&&p.enabled),missing=state.loans.filter(l=>l.apr===null||l.emi===null);
+    return heading('THE WAY FORWARD','Your loans','Track each balance, rate and repayment target.',btn(icon('plus')+' Add loan','add-loan','primary'))+
+      '<div class="grid-3"><div class="stat"><span class="metric-label">Tracked outstanding</span><strong class="stat-value">'+money(lo.trackedBalance ?? lo.openingTotal,true)+'</strong><p class="small muted">'+state.loans.length+' loans and obligations</p></div><div class="stat"><span class="metric-label">Known principal paid</span><strong class="stat-value">'+money(lo.knownPrincipalPaid||0,true)+'</strong><p class="small muted">From payments you recorded</p></div><div class="stat"><span class="metric-label">Your goal</span><strong class="stat-value">December '+state.settings.targetYear+'</strong><p class="small muted">Change this in Settings</p></div></div>'+
+      (missing.length?note('<strong>'+missing.length+' accounts still need a rate or individual EMI.</strong> The cash forecast uses your aggregate EMI plan. Balances track recorded principal; repayment illustrations cover the combined home loans. A full-debt payoff date is not calculated.','warn'):'')+
+      (lo.warnings?.length?note(lo.warnings.map(w=>esc(typeof w==='string'?w:w.message||JSON.stringify(w))).join('<br>'),'warn'):'')+
+      '<div class="grid-2 loan-grid">'+state.loans.map(l=>{const paid=state.transactions.filter(t=>t.type==='debt'&&t.loanId===l.id&&t.date>=state.settings.startMonth+'-01'&&t.date<=today&&t.principal!==null).reduce((s,t)=>s+t.principal,0),balance=Math.max(0,l.balance-paid);return '<article class="card loan-card"><div class="card-head"><div><p class="eyebrow">'+esc(l.kind.toUpperCase())+'</p><h2>'+esc(l.name)+'</h2></div><button class="icon-button" aria-label="Edit '+esc(l.name)+'" data-action="edit-loan" data-id="'+esc(l.id)+'">'+icon('edit')+'</button></div><p class="loan-value">'+money(balance)+'</p><div class="loan-details"><div><span>Interest / year</span><strong>'+ (l.apr===null?'Not entered':l.apr+'%'+(l.aprAssumed?'*':''))+'</strong></div><div><span>Individual EMI</span><strong>'+money(l.emi)+'</strong></div><div><span>Target close</span><strong>'+(l.target?monthLabel(l.target):'Not set')+'</strong></div></div>'+(l.note?'<p class="small muted loan-note">'+esc(l.note)+'</p>':'')+btn('Record payment','pay-loan','secondary','data-id="'+esc(l.id)+'"')+'</article>';}).join('')+'</div>'+
+      '<section class="card"><div class="card-head"><h2>Cash scheduled for debt</h2>'+btn('Edit EMI plans','recurring','ghost')+'</div>'+paymentPlans.map(planRow).join('')+'</section>'+
+      note('<strong>Refinancing moves debt; it does not erase it.</strong> The proposed balance transfer is kept out of the outstanding total. Once it is disbursed, update the replaced balances and the new loan from lender statements. The home-loan comparison is a separate illustration.')+
+      btn('Compare home-loan paths '+icon('arrow'),'scenarios','primary');
+  }
+  function scenariosView() {
+    const s=state.settings,results=CP.homeScenarios(state),h=s.homeComparison,monthly6=CP.payment(h.principal,h.rate,72),monthly9=CP.payment(h.principal,h.rate,108);
+    const arr=Array.isArray(results)?results:(results.scenarios||[]);
+    return '<section class="card"><div class="card-head"><div><p class="eyebrow">HOME LOANS ONLY</p><h2>Steady payments. Optional accelerators.</h2></div>'+btn('Edit scenario','scenario-edit','secondary')+'</div><p class="muted">Illustration on '+money(h.principal)+' at '+h.rate+'%, starting '+monthLabel(h.startMonth)+'. This is a proposed home-loan balance, not another loan added to your debt.</p><div class="grid-2 comparison-grid"><div class="goal-card"><p class="eyebrow">6 YEARS · '+monthLabel(CP.addMonths(h.startMonth,71))+'</p><strong>'+money(monthly6)+'</strong><span>per month for home loans</span></div><div class="goal-card selected"><p class="eyebrow">9 YEARS · '+monthLabel(CP.addMonths(h.startMonth,107))+'</p><strong>'+money(monthly9)+'</strong><span>per month for home loans</span></div></div><p class="small muted">The longer path leaves '+money(monthly6-monthly9)+' more each month before other loans and costs. Rates stay constant in this illustration.</p></section>'+
+    '<section class="card"><div class="card-head"><h2>What if the extras arrive?</h2>'+badge('Illustration')+'</div><p class="muted">Base payment uses '+h.baseYears+' years. From '+monthLabel(s.scenario.extraStartMonth)+', '+s.scenario.prepayShare+'% of the selected bonus or cumulative salary increase goes to the home loans.</p><div class="scenario-grid">'+arr.map((r,i)=>'<article class="scenario-card '+(i===0?'base':'')+'"><span class="scenario-number">0'+(i+1)+'</span><h3>'+esc(r.label)+'</h3><strong>'+(r.payoffMonth?monthLabel(r.payoffMonth):'Not calculated')+'</strong><p class="small muted">'+(r.interest!=null?money(r.interest,true)+' total interest':'Enter a principal and rate')+'</p></article>').join('')+'</div>'+note('These are <strong>home-loan calculations only</strong>, not a debt-free promise. They do not automatically spend your forecast cash. Add an extra payment to Your plan only after bills and your cash floor are funded.','warn')+'</section>'+
+    '<section class="card"><h2>Keep upside optional.</h2><div class="timeline"><div class="step"><span class="dot">1</span><div><h3>Cover the next bill</h3><p>Make sure annual premiums and dated costs have cash available.</p></div></div><div class="step"><span class="dot">2</span><div><h3>Protect your reserve</h3><p>Keep at least '+money(s.liquidityFloor)+' accessible. Build toward '+money(s.reserveTarget)+'.</p></div></div><div class="step"><span class="dot">3</span><div><h3>Then choose the extra repayment</h3><p>Use actual net bonus and take-home salary increases. Your base cash plan leaves these off unless you enable them.</p></div></div></div></section>';
+  }
+  function settingsView() {
+    const s=state.settings;
+    return heading('MAKE IT YOURS','Settings & safety nets','Everything is editable. Your information stays in this browser.')+
+      '<div class="grid-2"><section class="card settings-section"><div class="card-head"><h2>Your starting point</h2>'+btn('Edit','opening','ghost')+'</div><dl class="detail-list"><div><dt>Name</dt><dd>'+esc(s.name||'Not entered')+'</dd></div><div><dt>Opening month</dt><dd>'+monthLabel(s.startMonth)+'</dd></div><div><dt>Opening liquid cash</dt><dd>'+money(s.openingCash)+'</dd></div><div><dt>Debt-free goal</dt><dd>December '+s.targetYear+'</dd></div></dl><p class="small muted">Use accessible savings and bank balances. Locked investments are not counted.</p></section><section class="card settings-section"><div class="card-head"><h2>Cash & family goals</h2>'+btn('Edit','goals-edit','ghost')+'</div><dl class="detail-list"><div><dt>Minimum cash floor</dt><dd>'+money(s.liquidityFloor)+'</dd></div><div><dt>Liquid reserve goal</dt><dd>'+money(s.reserveTarget)+'</dd></div><div><dt>Education / month</dt><dd>'+money(s.educationMonthly)+'</dd></div><div><dt>Investment / month</dt><dd>'+money(s.investmentMonthly)+'</dd></div></dl><p class="small muted">Goal contributions leave available cash, but are not assumed lost or spent. No investment return is assumed.</p></section></div>'+
+      '<section class="card settings-section"><div class="card-head"><h2>Forecast assumptions</h2>'+btn('Edit','assumptions','ghost')+'</div><div class="grid-3"><div><span class="metric-label">Expected income targets</span><strong class="settings-value">'+(s.includeExpected?'Included':'Excluded')+'</strong></div><div><span class="metric-label">Annual salary growth</span><strong class="settings-value">'+(s.scenario.raiseEnabled?s.scenario.salaryGrowth+'%':'Off')+'</strong></div><div><span class="metric-label">Annual bonus</span><strong class="settings-value">'+(s.scenario.bonusEnabled?money(s.scenario.annualBonus):'Off')+'</strong></div></div><p class="small muted">Bonuses and raises are not guaranteed. Enter amounts after tax and other deductions. Monthly household inflation: '+s.householdInflation+'% per year from 2028.</p></section>'+
+      '<section class="card settings-section"><div class="card-head"><div><h2>Your data, on your device</h2><p class="muted">No account, no analytics and no financial data sent to a server.</p></div>'+icon('shield')+'</div><div class="inline-actions">'+btn(icon('download')+' Export backup','backup','primary')+btn('Import / restore','import','secondary')+'</div><p class="small muted">'+(lastBackup?'Last backup exported '+dateLabel(lastBackup.slice(0,10))+'. ':'No backup exported in this browser yet. ')+'Keep a backup outside your browser.</p><details><summary>How local saving works</summary><p>Entries are saved in this browser’s local storage. They remain when you close the page, but do not sync to another phone or browser. Clearing website data or using a private browsing session can erase them. Storage is not encrypted; anyone with access to this browser profile can view it.</p><p>Other websites on the same origin can access that origin’s storage. For GitHub Pages, project paths under the same username share an origin. Host only code you trust there. The public upload file contains no personal setup; import your private JSON file on your phone.</p><p>If you open a downloaded HTML file directly, browser storage behavior varies. For regular mobile use, host the public index.html on GitHub Pages, then import your setup. The page needs to load, but its calculations do not contact a server.</p></details></section>'+
+      '<section class="card settings-section"><h2>How the numbers work</h2><p>The plan uses monthly cash flow. Actual entries replace their matched planned amount. Household spending within the monthly budget uses up that budget; overspending increases the total. Mark a fixed bill or income as complete if the final amount differs from the plan.</p><p>Loan payments reduce available cash once. A loan balance changes only when you record its principal portion or edit its statement balance. Unknown rates and individual EMIs stay unknown.</p><p>Annual premiums appear in their due month. A monthly provision is guidance only and is never charged a second time. Payment days are editable placeholders where you supplied only a month.</p></section>'+
+      '<section class="card settings-section danger-zone"><h2>Start again</h2><p class="muted">Export a backup first. Reset removes this planner’s data from this browser.</p>'+btn('Reset this planner','reset','danger')+'</section>';
+  }
+  function openDialog(title,sub,body,actions,submit) {
+    returnFocus=document.activeElement;
+    $('dialogTitle').textContent=title;$('dialogSub').textContent=sub;$('dialogBody').innerHTML='<form id="entryForm">'+body+'</form>';$('dialogActions').innerHTML=actions;$('formError').hidden=true;
+    $('entryForm').onsubmit=e=>{e.preventDefault();try{submit?.(new FormData(e.target));}catch(err){formError(err.message);}};
+    const d=$('editor'); if(!d.open)d.showModal();
+    requestAnimationFrame(()=>{const el=$('entryForm').querySelector('[autofocus]')||$('entryForm').querySelector('input,select,button');el?.focus();});
+  }
+  function closeDialog(){ $('editor').close();pendingImport=null;returnFocus?.focus?.(); }
+  function formError(message){$('formError').textContent=message;$('formError').hidden=false;}
+  function actions(saveLabel='Save changes',deleteAction='',id=''){return (deleteAction?btn('Delete',deleteAction,'danger','data-id="'+esc(id)+'"'):'')+'<span class="action-spacer"></span>'+btn('Cancel','close-dialog','ghost')+'<button class="button primary" form="entryForm" type="submit">'+saveLabel+'</button>';}
+  function amountValue(fd,key,{nullable=false,max=1e12,min=0}={}) {const raw=String(fd.get(key)??'').trim();if(!raw&&nullable)return null;if(!raw)throw new Error('Enter an amount.');const n=Number(raw.replace(/,/g,''));if(!Number.isFinite(n)||n<min||n>max)throw new Error('Enter a valid amount between '+min+' and '+max+'.');return Math.round(n*100)/100;}
+  function transactionDialog(type,existing=null,options={}) {
+    if(today!==CP.localDate()){today=CP.localDate();forecastCache=null;}
+    const t=existing||{id:uid(),type,amount:'',date:today,description:'',planId:null,period:today.slice(0,7),complete:false,loanId:null,principal:null};
+    let period=options.period||t.period, date=t.date;
+    if(options.loanId)t.loanId=options.loanId;
+    if(options.planId)t.planId=options.planId;
+    const receiptState=clone(state);receiptState.settings.includeExpected=true;receiptState.settings.scenario.bonusEnabled=true;
+    const activePlans=CP.occurrences(receiptState,period).filter(p=>p.kind===type);
+    let allPlans=[...activePlans];
+    for(const p of state.plans.filter(p=>p.kind===type&&!allPlans.some(a=>a.id===p.id)))allPlans.push(p);
+    if(existing?.planId&&!allPlans.some(p=>p.id===existing.planId)) allPlans.push({id:existing.planId,name:({'goal-education':'Education set aside','goal-investment':'Investment set aside','scenario-bonus':'Annual bonus'}[existing.planId]||'Previously linked item'),kind:type,category:'other',amount:0,enabled:false});
+    if(!existing&&!options.planId&&type==='expense') t.planId=activePlans.find(p=>p.category==='household')?.id||null;
+    if(!existing&&!options.planId&&type==='income'){t.planId=activePlans.find(p=>p.category==='salary')?.id||null;t.complete=!!t.planId;}
+    if(!existing&&options.planId){const p=allPlans.find(p=>p.id===options.planId);if(p){const already=state.transactions.filter(x=>x.planId===p.id&&x.period===period&&x.date>=state.settings.startMonth+'-01').reduce((sum,x)=>sum+x.amount,0);t.amount=Math.max(0,p.amount-already)||'';t.description=p.name;t.loanId=p.loanId||t.loanId;t.complete=p.category!=='household'&&p.category!=='emi';}}
+    if(!existing&&options.loanId){t.description=state.loans.find(l=>l.id===options.loanId)?.name+' payment';const match=activePlans.find(p=>p.loanId===options.loanId)||activePlans.find(p=>p.category==='emi'&&!p.loanId);if(match)t.planId=match.id;}
+    const title=existing?'Edit entry':type==='income'?'Add income':type==='debt'?'Record loan payment':'Add expense';
+    const labels={income:'Amount received',expense:'Amount spent',debt:'Amount paid'};
+    const linkedName=allPlans.find(p=>p.id===t.planId)?.name||'Extra / outside the plan';
+    const body='<div class="amount-field">'+field(labels[type]+' (₹)','amount',t.amount,'number','min="0.01" max="1000000000000" step="0.01" inputmode="decimal" required autofocus')+'</div><div class="field-grid">'+field('Date','date',date,'date','max="'+today+'" min="'+state.settings.startMonth+'-01" required')+field('Brief description','description',t.description,'text','maxlength="160" placeholder="'+(type==='income'?'e.g. Salary':type==='debt'?'e.g. Monthly EMI':'e.g. Groceries')+'"')+'</div><details class="entry-advanced"'+(existing||type==='debt'?' open':'')+'><summary>Plan: '+esc(linkedName)+' <span class="muted">· change</span></summary>'+selectField(type==='income'?'Count toward an income plan':type==='debt'?'Count toward scheduled EMI':'Count toward a budget or bill','planId',[['','Extra / outside the plan'],...allPlans.map(p=>[p.id,p.name+(p.start?' · '+monthLabel(p.start.slice(0,7)):'')])],t.planId||'')+'<p class="small muted">Link the entry so it replaces that part of the plan. '+(type==='expense'?'Spending inside the household budget does not increase the budget twice.':'An amount marked final replaces the expected total for that planned month.')+'</p><div class="field-grid">'+field('Planned month this belongs to','period',period,'month','min="'+state.settings.startMonth+'" required')+'</div>'+checkField('This is the final amount for this planned item this month','complete',t.complete,'Leave off for household spending, a partial payment, or one loan’s share of your aggregate EMI.')+'</details>'+
+      (type==='debt'?'<div class="divider"></div>'+selectField('Loan balance to update (optional)','loanId',[['','No principal allocation'],...state.loans.map(l=>[l.id,l.name])],t.loanId||'')+field('Principal portion only (₹, optional)','principal',t.principal,'number','min="0" step="0.01" inputmode="decimal"')+'<p class="small muted">Leave blank if you only know the EMI. Interest is not principal. This prevents the loan balance from being reduced by the full EMI.</p>':'');
+    openDialog(title,'Saved only in this browser. You can edit or undo an entry.',body,actions(existing?'Save entry':'Save '+(type==='debt'?'payment':type),existing?'delete-entry':'',t.id),fd=>{
+      const amount=amountValue(fd,'amount',{min:0.01}),planId=fd.get('planId')||null,principal=type==='debt'?amountValue(fd,'principal',{nullable:true}):null,loanId=type==='debt'?(fd.get('loanId')||null):null;
+      const dt=String(fd.get('date')),per=String(fd.get('period'));
+      if(dt>CP.localDate())throw new Error('This is a future date. Add a planned payment instead.');
+      if(dt<state.settings.startMonth+'-01')throw new Error('The entry is before your opening month. Adjust your starting point first.');
+      if(principal!==null&&(!loanId||principal>amount))throw new Error('Choose a loan and enter principal no larger than the payment.');
+      if(planId){const match=CP.occurrences(receiptState,per).find(p=>p.id===planId);if(!match&&!(existing&&existing.planId===planId&&existing.period===per))throw new Error('This plan is not active in that planned month. Choose a different month or record it outside the plan.');}
+      const entry={...t,amount,date:dt,description:String(fd.get('description')).trim(),planId,period:per,complete:!!fd.get('complete')&&!!planId,loanId,principal};
+      if(mutate(()=>{const idx=state.transactions.findIndex(x=>x.id===t.id);if(idx>=0)state.transactions[idx]=entry;else state.transactions.push(entry);},existing?'Entry updated':'Entry saved on this device'))closeDialog();
+    });
+    const planSelect=$('entryForm').elements.planId;
+    planSelect.onchange=()=>{const p=allPlans.find(x=>x.id===planSelect.value);$('entryForm').elements.complete.checked=!!p&&p.category!=='household'&&p.category!=='emi';$('entryForm').querySelector('summary').textContent='Plan: '+(p?.name||'Extra / outside the plan')+' · change';if(p?.loanId&&type==='debt')$('entryForm').elements.loanId.value=p.loanId;};
+  }
+  function planDialog(existing=null,defaults={}) {
+    const p=existing||{id:uid(),name:'',kind:defaults.kind||'expense',category:defaults.frequency==='once'?'event':defaults.kind==='income'?'salary':defaults.kind==='debt'?'emi':'household',amount:'',frequency:defaults.frequency||'monthly',start:today,end:null,dueDay:Number(today.slice(8)),annualMonth:Number(today.slice(5,7)),expected:false,enabled:true,loanId:null,note:''};
+    const body=field('Name','name',p.name,'text','required maxlength="120" autofocus placeholder="e.g. School fees"')+'<div class="field-grid">'+selectField('Type','kind',[['income','Income'],['expense','Expense'],['debt','Loan / debt payment']],p.kind)+field('Amount (₹)','amount',p.amount,'number','required min="0" step="0.01" inputmode="decimal"')+selectField('Repeats','frequency',[['monthly','Every month'],['annual','Every year'],['once','One time']],p.frequency)+selectField('Category','category',[['salary','Salary'],['freelance','Freelance'],['business','Business'],['support','Family support'],['household','Household budget'],['emi','Loan EMI'],['premium','Annual premium'],['event','Big expense'],['personal-debt','Personal obligation'],['education','Education'],['investment','Investment'],['other','Other'],...(!['salary','freelance','business','support','household','emi','premium','event','personal-debt','education','investment','other'].includes(p.category)?[[p.category,p.category]]:[])],p.category)+field('First date / payment date','start',p.start,'date','required')+field('Last date (optional)','end',p.end,'date')+field('Payment day (monthly / annual)','dueDay',p.dueDay,'number','min="1" max="31" required')+selectField('Payment month (annual only)','annualMonth',Array.from({length:12},(_,i)=>[i+1,new Date(2026,i,1).toLocaleDateString('en-IN',{month:'long'})]),p.annualMonth||Number(p.start.slice(5,7)))+'</div>'+selectField('Linked loan (debt payments only)','loanId',[['','None / aggregate EMI'],...state.loans.map(l=>[l.id,l.name])],p.loanId||'')+field('Note / assumption','note',p.note,'text','maxlength="500"')+checkField('Expected income / target, not guaranteed','expected',p.expected)+checkField('Include this item in the plan','enabled',p.enabled);
+    openDialog(existing?'Edit planned item':'Add to your plan','This changes forecasts. It does not create an actual payment.',body,actions('Save plan',existing?'delete-plan':'',p.id),fd=>{
+      const item={...p,name:String(fd.get('name')).trim(),kind:String(fd.get('kind')),amount:amountValue(fd,'amount'),frequency:String(fd.get('frequency')),category:String(fd.get('category')),start:String(fd.get('start')),end:fd.get('end')||null,dueDay:amountValue(fd,'dueDay',{min:1,max:31}),annualMonth:Number(fd.get('annualMonth')),expected:!!fd.get('expected'),enabled:!!fd.get('enabled'),loanId:fd.get('kind')==='debt'?(fd.get('loanId')||null):null,note:String(fd.get('note')).trim()};
+      if(!item.name)throw new Error('Give this plan a name.');
+      if(item.end&&item.end<item.start)throw new Error('The last date must be on or after the first date.');
+      if(mutate(()=>{const idx=state.plans.findIndex(x=>x.id===p.id);if(idx>=0){if(p.frequency==='once'&&item.frequency==='once'&&p.start.slice(0,7)!==item.start.slice(0,7)){state.transactions.forEach(t=>{if(t.planId===p.id&&t.period===p.start.slice(0,7))t.period=item.start.slice(0,7);});}state.plans[idx]=item;}else state.plans.push(item);},'Plan updated'))closeDialog();
+    });
+  }
+  function loanDialog(existing=null) {
+    const l=existing||{id:uid(),name:'',balance:'',apr:null,emi:null,kind:'personal',maturity:null,target:null,note:'',aprAssumed:false};
+    const body=field('Loan / lender name','name',l.name,'text','required maxlength="120" autofocus')+'<div class="field-grid">'+field('Opening balance (₹)','balance',l.balance,'number','required min="0" step="0.01" inputmode="decimal"')+selectField('Type','kind',[['home','Home loan'],['personal','Personal loan'],['card','Credit card'],['informal','Personal obligation']],l.kind)+field('Annual interest rate % (optional)','apr',l.apr,'number','min="0" max="100" step="0.01" inputmode="decimal"')+field('Individual EMI ₹ (optional)','emi',l.emi,'number','min="0" step="0.01" inputmode="decimal"')+field('Current maturity (optional)','maturity',l.maturity,'month')+field('Target closure (optional)','target',l.target,'month')+'</div>'+checkField('The interest rate is an estimate','aprAssumed',l.aprAssumed)+field('Note','note',l.note,'text','maxlength="600"')+note('This is the opening balance as of '+monthLabel(state.settings.startMonth)+'. Recorded principal payments are deducted from it. Do not enter a current balance that already subtracts those same payments.');
+    openDialog(existing?'Edit loan':'Add loan','Leave unknown rates or EMIs blank. Individual EMIs are reference details; scheduled EMI plans control cash flow.',body,actions('Save loan',existing?'delete-loan':'',l.id),fd=>{
+      const loan={...l,name:String(fd.get('name')).trim(),balance:amountValue(fd,'balance'),apr:amountValue(fd,'apr',{nullable:true,max:100}),emi:amountValue(fd,'emi',{nullable:true}),kind:String(fd.get('kind')),maturity:fd.get('maturity')||null,target:fd.get('target')||null,note:String(fd.get('note')).trim(),aprAssumed:!!fd.get('aprAssumed')};
+      if(mutate(()=>{const idx=state.loans.findIndex(x=>x.id===l.id);if(idx>=0)state.loans[idx]=loan;else state.loans.push(loan);},'Loan updated'))closeDialog();
+    });
+  }
+  function openingDialog() {
+    const s=state.settings;
+    openDialog('Your starting point','Use the cash available at the beginning of your opening month.',field('Your name','name',s.name,'text','maxlength="80"')+'<div class="field-grid">'+field('Opening month','startMonth',s.startMonth,'month','required')+field('Opening liquid cash (₹)','openingCash',s.openingCash,'number','min="0" step="0.01" inputmode="decimal" placeholder="Unknown — leave blank"')+field('Debt-free target year','targetYear',s.targetYear,'number','min="2027" max="2060" required')+'</div>'+note('Opening cash is a snapshot. It is not income. Include accessible bank balances and savings, and exclude locked investments. Transactions before this month are excluded from calculations.'),actions('Save starting point'),fd=>{
+      const startMonth=String(fd.get('startMonth'));if(!/^\d{4}-(0[1-9]|1[0-2])$/.test(startMonth))throw new Error('Choose an opening month.');
+      const changes={name:String(fd.get('name')).trim(),startMonth,openingCash:amountValue(fd,'openingCash',{nullable:true}),targetYear:amountValue(fd,'targetYear',{min:Math.max(2027,Number(startMonth.slice(0,4))),max:2060})};
+      if(mutate(()=>{Object.assign(state.settings,changes);selectedMonth=selectedMonth<startMonth?startMonth:selectedMonth;},'Starting point saved'))closeDialog();
+    });
+  }
+  function goalsDialog() {
+    const s=state.settings;
+    openDialog('Cash & family goals','Protect cash first, then choose what to put aside each month. These monthly transfers begin in your opening month.', '<div class="field-grid">'+field('Minimum cash floor (₹)','liquidityFloor',s.liquidityFloor,'number','required min="0" step="100" inputmode="decimal"')+field('Liquid reserve goal (₹)','reserveTarget',s.reserveTarget,'number','required min="0" step="100" inputmode="decimal"')+field('Education contribution / month (₹)','educationMonthly',s.educationMonthly,'number','required min="0" step="100" inputmode="decimal"')+field('Other investment / month (₹)','investmentMonthly',s.investmentMonthly,'number','required min="0" step="100" inputmode="decimal"')+'</div>'+note('The cash floor and reserve are targets, not expenses. Education and investment contributions reduce available cash. To start a contribution later, leave its value here at zero and add a dated monthly plan instead.'),actions(),fd=>{const changes={};for(const k of ['liquidityFloor','reserveTarget','educationMonthly','investmentMonthly'])changes[k]=amountValue(fd,k);if(changes.reserveTarget<changes.liquidityFloor)throw new Error('The reserve goal should be at least the minimum cash floor.');if(mutate(()=>Object.assign(state.settings,changes),'Cash goals updated'))closeDialog();});
+  }
+  function assumptionsDialog(scenarioOnly=false) {
+    const s=state.settings,sc=s.scenario,h=s.homeComparison;
+    const body=(!scenarioOnly?checkField('Include expected income targets','includeExpected',s.includeExpected)+checkField('Include annual bonuses in the cash forecast','bonusEnabled',sc.bonusEnabled)+checkField('Include annual salary growth in the cash forecast','raiseEnabled',sc.raiseEnabled):'')+
+      '<div class="field-grid">'+field('Net annual bonus (₹)','annualBonus',sc.annualBonus,'number','required min="0" step="1000" inputmode="decimal"')+field('Bonus first year','bonusStartYear',sc.bonusStartYear,'number','required min="2020" max="2060"')+field('Bonus payment month (1–12)','bonusMonth',sc.bonusMonth,'number','required min="1" max="12"')+field('Annual take-home salary growth %','salaryGrowth',sc.salaryGrowth,'number','required min="0" max="100" step="0.1"')+field('First raise year','raiseStartYear',sc.raiseStartYear,'number','required min="2020" max="2060"')+field('Raise month (1–12)','raiseMonth',sc.raiseMonth,'number','required min="1" max="12"')+(!scenarioOnly?field('Yearly household cost growth %','householdInflation',s.householdInflation,'number','required min="0" max="100" step="0.1"'):'')+'</div>'+
+      (scenarioOnly?'<div class="divider"></div><h3>Home-loan illustration</h3><div class="field-grid">'+field('Combined proposed principal (₹)','principal',h.principal,'number','required min="0" step="100" inputmode="decimal"')+field('Annual interest %','rate',h.rate,'number','required min="0" max="100" step="0.01"')+field('First payment month','homeStart',h.startMonth,'month','required')+selectField('Base repayment term','baseYears',[[6,'6 years'],[9,'9 years'],...(![6,9].includes(h.baseYears)?[[h.baseYears,h.baseYears+' years']]:[])],h.baseYears)+field('Upside used for extra payments %','prepayShare',sc.prepayShare,'number','required min="0" max="100"')+field('Start extra payments from','extraStartMonth',sc.extraStartMonth,'month','required')+'</div>'+note('This illustration uses monthly reducing-balance interest. It excludes other loans, fees and changing rates. Changing it does not create a new outstanding loan or automatically add payments to your cash plan.'):'');
+    openDialog(scenarioOnly?'Edit repayment illustration':'Forecast assumptions','Use take-home amounts. Bonus and salary increases remain assumptions until received.',body,actions(),fd=>{
+      const changes={annualBonus:amountValue(fd,'annualBonus'),bonusStartYear:amountValue(fd,'bonusStartYear',{min:2020,max:2060}),bonusMonth:amountValue(fd,'bonusMonth',{min:1,max:12}),salaryGrowth:amountValue(fd,'salaryGrowth',{max:100}),raiseStartYear:amountValue(fd,'raiseStartYear',{min:2020,max:2060}),raiseMonth:amountValue(fd,'raiseMonth',{min:1,max:12})};
+      const hchanges=scenarioOnly?{principal:amountValue(fd,'principal'),rate:amountValue(fd,'rate',{max:100}),startMonth:String(fd.get('homeStart')),baseYears:Number(fd.get('baseYears'))}:null;
+      const extras=scenarioOnly?{prepayShare:amountValue(fd,'prepayShare',{max:100}),extraStartMonth:String(fd.get('extraStartMonth'))}:{bonusEnabled:!!fd.get('bonusEnabled'),raiseEnabled:!!fd.get('raiseEnabled')};
+      const settingsChanges=scenarioOnly?{}:{includeExpected:!!fd.get('includeExpected'),householdInflation:amountValue(fd,'householdInflation',{max:100})};
+      if(mutate(()=>{Object.assign(state.settings.scenario,changes,extras);Object.assign(state.settings,settingsChanges);if(scenarioOnly)Object.assign(state.settings.homeComparison,hchanges);},'Assumptions updated'))closeDialog();
+    });
+  }
+  function confirmDialog(title,body,label,fn) {openDialog(title,'',body,btn('Cancel','close-dialog','ghost')+'<button class="button danger" type="submit" form="entryForm">'+label+'</button>',()=>{fn();});}
+  function removeEntry(id){confirmDialog('Delete this entry?','<p>The actual entry will be removed. Any matching planned amount becomes outstanding again. You can undo the deletion immediately.</p>','Delete entry',()=>{if(mutate(()=>state.transactions=state.transactions.filter(t=>t.id!==id),'Entry deleted'))closeDialog();});}
+  function removePlan(id){const used=state.transactions.some(t=>t.planId===id);confirmDialog('Remove this planned item?','<p>Its future forecast payments will be removed.'+(used?' Existing actual entries will remain and be counted outside this plan.':'')+'</p>','Remove plan',()=>{if(mutate(()=>{state.plans=state.plans.filter(p=>p.id!==id);state.transactions.forEach(t=>{if(t.planId===id){t.planId=null;t.complete=false;}});},'Planned item removed'))closeDialog();});}
+  function removeLoan(id){confirmDialog('Remove this loan?','<p>The loan balance will be removed. Actual cash payments remain, but their links to this loan and principal allocations will be cleared. Export a backup first if you need that history. Any repayment plan linked only to this loan will be paused; aggregate EMI plans are unchanged.</p>','Remove loan',()=>{if(mutate(()=>{state.loans=state.loans.filter(l=>l.id!==id);state.transactions.forEach(t=>{if(t.loanId===id){t.loanId=null;t.principal=null;}});state.plans.forEach(p=>{if(p.loanId===id){p.loanId=null;p.enabled=false;}});},'Loan removed'))closeDialog();});}
+  function download(content,name,type) {const a=document.createElement('a'),url=URL.createObjectURL(new Blob([content],{type}));a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+  function backup(){
+    if(unreadableSavedData){
+      if(typeof storedSnapshot!=='string'){toast('Stored data cannot be read. Restore browser storage access before replacing it.');return false;}
+      download(storedSnapshot,'Clearpath-Recovery-'+CP.localDate()+'.json','application/json');
+      toast('Original unreadable data downloaded for recovery. It has not been replaced.');
+      return true;
+    }
+    download(JSON.stringify({...state,exportedAt:new Date().toISOString()},null,2),'Clearpath-Backup-'+CP.localDate()+'.json','application/json');
+    lastBackup=new Date().toISOString();try{localStorage.setItem(STORE+'.backup',lastBackup);}catch(_){}
+    toast('Backup downloaded. Keep it somewhere safe.');if(view==='settings')render();return true;
+  }
+  async function readImport(file) {
+    if(!file)return;
+    if(file.size>100*1024*1024){toast('Choose a JSON backup smaller than 100 MB.');return;}
+    try {
+      const parsed=JSON.parse(await file.text()),imported=clean(parsed);
+      pendingImport=imported;
+      openDialog('Restore this setup?','This replaces the current plan on this device.', '<dl class="detail-list"><div><dt>Name</dt><dd>'+esc(imported.settings.name||'Not entered')+'</dd></div><div><dt>Plans</dt><dd>'+imported.plans.length+'</dd></div><div><dt>Loans</dt><dd>'+imported.loans.length+'</dd></div><div><dt>Actual entries</dt><dd>'+imported.transactions.length+'</dd></div></dl><p>Export your current plan first if you want to keep both. Imported descriptions are treated as text, never run as code.</p>',btn('Export current backup','backup','secondary')+btn('Cancel','close-dialog','ghost')+'<button class="button primary" type="submit" form="entryForm">Restore setup</button>',()=>{
+        const old=clone(state),oldProblem=storageProblem;if(unreadableSavedData&&!backup())return;state=imported;storageProblem='';if(save('Setup restored on this device',old)){selectedMonth=today.slice(0,7)<state.settings.startMonth?state.settings.startMonth:today.slice(0,7);closeDialog();view='home';render();$('storageNotice')?.setAttribute('hidden','');}else{storageProblem=oldProblem||storageProblem;}
+      });
+    }catch(err){toast('Import rejected: '+err.message);}
+    finally{$('backupFile').value='';}
+  }
+  function navigate(next){view=next;render();window.scrollTo({top:0,behavior:'instant'});$('main').focus({preventScroll:true});}
+  document.addEventListener('click',e=>{
+    const nav=e.target.closest('[data-view]');if(nav){navigate(nav.dataset.view);return;}
+    const b=e.target.closest('[data-action]');if(!b)return;const a=b.dataset.action,id=b.dataset.id;
+    if(a==='close-dialog')closeDialog();
+    else if(a==='add-expense')transactionDialog('expense');
+    else if(a==='add-income')transactionDialog('income');
+    else if(a==='edit-entry'){const t=state.transactions.find(x=>x.id===id);if(t)transactionDialog(t.type,clone(t));}
+    else if(a==='delete-entry')removeEntry(id);
+    else if(a==='pay-plan'){const p=state.plans.find(x=>x.id===id);if(p)transactionDialog(p.kind,null,{planId:id,period:b.dataset.period});}
+    else if(a==='pay-loan')transactionDialog('debt',null,{loanId:id});
+    else if(a==='add-plan')planDialog(null,{kind:b.dataset.kind||'expense'});
+    else if(a==='add-event')planDialog(null,{frequency:'once'});
+    else if(a==='edit-plan'){const p=state.plans.find(x=>x.id===id);if(p)planDialog(clone(p));}
+    else if(a==='delete-plan')removePlan(id);
+    else if(a==='add-loan')loanDialog();
+    else if(a==='edit-loan'){const l=state.loans.find(x=>x.id===id);if(l)loanDialog(clone(l));}
+    else if(a==='delete-loan')removeLoan(id);
+    else if(a==='opening')openingDialog();
+    else if(a==='goals-edit')goalsDialog();
+    else if(a==='assumptions')assumptionsDialog();
+    else if(a==='scenario-edit')assumptionsDialog(true);
+    else if(a==='backup')backup();
+    else if(a==='import')$('backupFile').click();
+    else if(a==='settings'||a==='go-settings')navigate('settings');
+    else if(a==='go-activity')navigate('activity');
+    else if(a==='go-loans')navigate('loans');
+    else if(a==='go-plan'){planTab='forecast';navigate('plan');}
+    else if(a==='scenarios'){planTab='scenarios';navigate('plan');}
+    else if(a==='recurring'){planTab='recurring';navigate('plan');}
+    else if(a==='plan-tab'){planTab=id;render();}
+    else if(a==='activity-filter'){activityFilter=id;render();}
+    else if(a==='show-month'){selectedMonth=b.dataset.month;navigate('home');}
+    else if(a==='undo'&&undoState){const current=clone(state),target=undoState;state=clone(target);if(save('Change undone',current))undoState=null;else undoState=target;}
+    else if(a==='reset')confirmDialog('Reset this planner?','<p>This removes your plan, loans and actual entries from this browser. Export a backup before continuing.</p>','Reset planner',()=>{const prev=clone(state),oldProblem=storageProblem;if(unreadableSavedData&&!backup())return;state=CP.emptyState();storageProblem='';if(save('Planner reset',prev)){closeDialog();$('storageNotice')?.setAttribute('hidden','');navigate('home');}else{storageProblem=oldProblem||storageProblem;}});
+  });
+  document.addEventListener('change',e=>{if(e.target.id==='viewMonth'){const v=e.target.value;if(/^\d{4}-(0[1-9]|1[0-2])$/.test(v)&&v>=state.settings.startMonth&&v<=CP.addMonths(state.settings.startMonth,CP.forecastMonths(state)-1)){selectedMonth=v;render();}}if(e.target.id==='forecastYear'){forecastYear=e.target.value;render();}if(e.target.id==='backupFile')readImport(e.target.files[0]);});
+  document.addEventListener('input',e=>{if(e.target.id==='activitySearch'){activitySearch=e.target.value;const pos=e.target.selectionStart;render();$('activitySearch').focus();$('activitySearch').setSelectionRange(pos,pos);}});
+  $('editor').addEventListener('click',e=>{if(e.target===$('editor')){const r=$('editor').getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)closeDialog();}});
+  $('editor').addEventListener('cancel',()=>{pendingImport=null;});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&today!==CP.localDate()){today=CP.localDate();forecastCache=null;render();}});
+  load();render();
+})();
+
+  </script>
+</body>
+</html>
