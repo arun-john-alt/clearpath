@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#142b45">
   <meta name="color-scheme" content="light">
   <meta name="referrer" content="no-referrer">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-gyCTXzU+tAE3ICM7mejxhaYpMVSpAn5YrSxTd54RcO8=' 'sha256-49TTD58S8ZcaCfclE4urkMoBoU0jotVGNb1WC16LYY4=' 'sha256-wVsLerBz10EFegUaft2mZvHnxtBWF+y36THr/Yrh/To='; style-src 'unsafe-inline'; img-src data:; connect-src 'none'; base-uri 'none'; object-src 'none'; form-action 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-F3RWRTjaaEH8mr8RRPNvQqpSBLNMO36EWX3uZO4Vo8s=' 'sha256-49TTD58S8ZcaCfclE4urkMoBoU0jotVGNb1WC16LYY4=' 'sha256-Krmqi1uG6k4PVrB/PBSbVBdalv5l3ou4Et9Opv+Yqzc='; style-src 'unsafe-inline'; img-src data:; connect-src 'none'; base-uri 'none'; object-src 'none'; form-action 'none'">
   <meta name="description" content="Clearpath is a private, on-device view of your cash flow, commitments, and debt plan.">
   <title>Clearpath</title>
   <style>
@@ -35,6 +35,8 @@
 
 .setup-start{max-width:620px;padding:30px 0}.setup-start h1{font-size:30px;line-height:1.25;margin:0 0 14px}.setup-start>p{font-size:16px;line-height:1.6;margin:0 0 24px}.setup-start .inline-actions{margin-bottom:24px}.setup-start>p:last-child{font-size:14px;margin:0}.account-summary section{display:flex;flex-direction:column;align-items:flex-start}.account-summary section>.button{margin-top:auto}.account-summary p{min-height:0;margin-bottom:8px}.settings-section>summary{font-size:18px;font-weight:600}.dialog-heading>p:empty{display:none}
 @media(max-width:760px){.setup-start{padding:10px 0}.setup-start h1{font-size:28px}.setup-start .inline-actions{align-items:stretch;flex-direction:column}.setup-start .button{min-height:48px}.account-summary section{display:grid}.account-summary section>.button{margin-top:5px}.month-workspace-head p{font-size:12px}}
+
+.repayment-table{margin:20px 0 12px}.repayment-table table{table-layout:fixed;width:100%;min-width:0}.repayment-table th,.repayment-table td{white-space:normal;overflow-wrap:break-word}.repayment-table th:first-child{width:34%}@media(max-width:760px){.repayment-table th,.repayment-table td{padding:12px 7px}.repayment-table strong{white-space:nowrap}}
 
   </style>
 </head>
@@ -700,6 +702,57 @@
     return principal * rate / -Math.expm1(-months * Math.log1p(rate));
   }
 
+  function homeRepaymentTargets(state, {startMonth = localDate().slice(0, 7), deadlines = ['2032-12', '2035-12']} = {}) {
+    startMonth = startMonth < state.settings.startMonth ? state.settings.startMonth : startMonth;
+    const loans = state.loans.filter(loan => loan.kind === 'home').map(loan => {
+      const principalPaid = state.transactions.filter(entry => entry.type === 'debt' && entry.loanId === loan.id && entry.principal !== null && entry.date >= state.settings.startMonth + '-01' && entry.date <= localDate()).reduce((sum, entry) => sum + entry.principal, 0);
+      return {...loan, balance: Math.max(0, loan.balance - principalPaid)};
+    }).filter(loan => loan.balance > 0).sort((a, b) => (b.apr ?? 0) - (a.apr ?? 0));
+    const missing = loans.filter(loan => loan.apr === null || loan.emi === null || loan.emi <= 0).map(loan => loan.name);
+    const monthlyPayment = loans.reduce((sum, loan) => sum + (loan.emi || 0), 0);
+    if (!loans.length || missing.length) return {loans, missing, startMonth, monthlyPayment, targets: []};
+    function remaining(extra, frequency, months) {
+      const balances = loans.map(loan => loan.balance);
+      for (let index = 0; index < months; index++) {
+        const month = Number(addMonths(startMonth, index).slice(5, 7));
+        for (let i = 0; i < loans.length; i++) balances[i] *= 1 + loans[i].apr / 1200;
+        let cash = monthlyPayment;
+        for (let i = 0; i < loans.length; i++) {
+          const paid = Math.min(balances[i], loans[i].emi);
+          balances[i] -= paid;
+          cash -= paid;
+        }
+        if (frequency === 'monthly' || (frequency === 'quarterly' && month % 3 === 0) || (frequency === 'yearly' && month === 12)) cash += extra;
+        // Freed EMIs and extra principal go to the highest-rate remaining loan.
+        for (let i = 0; i < loans.length; i++) {
+          const paid = Math.min(balances[i], cash);
+          balances[i] -= paid;
+          cash -= paid;
+        }
+      }
+      return balances.reduce((sum, balance) => sum + balance, 0);
+    }
+    const targets = deadlines.filter(deadline => validMonth(deadline) && deadline >= startMonth).map(deadline => {
+      const months = monthDistance(startMonth, deadline) + 1;
+      const extras = {};
+      for (const frequency of ['monthly', 'quarterly', 'yearly']) {
+        if (remaining(0, frequency, months) <= 0.000001) { extras[frequency] = 0; continue; }
+        // A deadline before the first quarter/year-end has no such payment slot.
+        const hasPayment = Array.from({length: months}, (_, index) => Number(addMonths(startMonth, index).slice(5, 7))).some(month => frequency === 'monthly' || (frequency === 'quarterly' ? month % 3 === 0 : month === 12));
+        if (!hasPayment) { extras[frequency] = null; continue; }
+        let low = 0, high = loans.reduce((sum, loan) => sum + loan.balance, 0);
+        while (remaining(high, frequency, months) > 0.000001) high *= 2;
+        for (let iteration = 0; iteration < 60; iteration++) {
+          const mid = (low + high) / 2;
+          if (remaining(mid, frequency, months) > 0.000001) low = mid; else high = mid;
+        }
+        extras[frequency] = Math.ceil(high / 100) * 100;
+      }
+      return {deadline, months, ...extras};
+    });
+    return {loans, missing, startMonth, monthlyPayment, targets};
+  }
+
   function homeScenarios(state) {
     const home = state.settings.homeComparison;
     const sc = state.settings.scenario;
@@ -761,7 +814,7 @@
   }
 
   return Object.freeze({emptyState, validateState, forecastMonths, localDate, monthOf, addMonths, monthDistance,
-    money, occurrences, forecast, monthSummary, loanSummary, payment, homeScenarios});
+    money, occurrences, forecast, monthSummary, loanSummary, payment, homeRepaymentTargets, homeScenarios});
 });
 
   </script>
@@ -957,12 +1010,19 @@ globalThis.CLEARPATH_SEED = null;
       '<details class="card"><summary>Recording a refinance</summary><p>The proposed transfer is excluded from outstanding debt. After disbursement, update the old and new balances from lender statements. The home-loan comparison is a separate illustration.</p></details>'+
       btn('Compare home-loan paths '+icon('arrow'),'scenarios','primary');
   }
+  function repaymentTargetsView() {
+    const comparison=CP.homeRepaymentTargets(state);
+    const head='<div class="card-head"><h2>Extra payments to reach your deadline</h2>'+btn('Edit loans','go-loans','ghost')+'</div>';
+    if(!comparison.loans.length)return '<section class="card">'+head+'<p>Add your home loans to calculate extra payments.</p></section>';
+    if(comparison.missing.length)return '<section class="card">'+head+'<p>Enter the interest rate and monthly EMI for '+comparison.missing.map(esc).join(', ')+' to calculate both deadlines.</p></section>';
+    return '<section class="card">'+head+'<p>Continue your '+money(comparison.monthlyPayment)+' monthly home-loan payments. Choose one extra-payment frequency.</p><div class="table-wrap repayment-table"><table><thead><tr><th>Extra payment</th>'+comparison.targets.map(target=>'<th>By '+monthLabel(target.deadline)+'</th>').join('')+'</tr></thead><tbody>'+[['monthly','Every month'],['quarterly','Every quarter'],['yearly','Every year']].map(([frequency,label])=>'<tr><th scope="row">'+label+'</th>'+comparison.targets.map(target=>'<td><strong>'+ (target[frequency]===null?'No payment date':money(target[frequency]))+'</strong></td>').join('')+'</tr>').join('')+'<tr><th scope="row">Total with monthly extra</th>'+comparison.targets.map(target=>'<td>'+money(comparison.monthlyPayment+target.monthly)+'</td>').join('')+'</tr></tbody></table></div><details><summary>Balances and payment assumptions</summary><ul>'+comparison.loans.map(loan=>'<li>'+esc(loan.name)+': '+money(loan.balance)+' at '+loan.apr+'%; EMI '+money(loan.emi)+'.</li>').join('')+'</ul><p>Payments start '+monthLabel(comparison.startMonth)+'. Quarterly extras fall in March, June, September and December; yearly extras fall in December, including the first available December. Rates stay constant. Extras go to the highest-rate home loan first. After a loan closes, its EMI continues toward the remaining home loans. Amounts round up to ₹100.</p><p>These estimates use saved balances less recorded principal. They exclude fees and daily interest adjustments. Check the balance date and whether this month’s EMI has already been paid. Other debts and affordability are excluded. This comparison does not add payments to your cash forecast.</p></details></section>';
+  }
   function scenariosView() {
     const s=state.settings,results=CP.homeScenarios(state),h=s.homeComparison,monthly6=CP.payment(h.principal,h.rate,72),monthly9=CP.payment(h.principal,h.rate,108);
     const arr=Array.isArray(results)?results:(results.scenarios||[]);
-    return '<section class="card"><div class="card-head"><div><h2>Compare home-loan repayment terms</h2></div>'+btn('Edit scenario','scenario-edit','secondary')+'</div><p class="muted">Illustration on '+money(h.principal)+' at '+h.rate+'%, starting '+monthLabel(h.startMonth)+'. This is a proposed home-loan balance, not another loan added to your debt.</p><div class="grid-2 comparison-grid"><div class="goal-card"><p class="term-label">6-year term · '+monthLabel(CP.addMonths(h.startMonth,71))+'</p><strong>'+money(monthly6)+'</strong><span>per month for home loans</span></div><div class="goal-card selected"><p class="term-label">9-year term · '+monthLabel(CP.addMonths(h.startMonth,107))+'</p><strong>'+money(monthly9)+'</strong><span>per month for home loans</span></div></div><p class="small muted">The longer path leaves '+money(monthly6-monthly9)+' more each month before other loans and costs. Rates stay constant in this illustration.</p></section>'+
+    return repaymentTargetsView()+'<details class="card"><summary>Proposed refinance comparison</summary><section><div class="card-head"><div><h2>Compare home-loan repayment terms</h2></div>'+btn('Edit scenario','scenario-edit','secondary')+'</div><p class="muted">Illustration on '+money(h.principal)+' at '+h.rate+'%, starting '+monthLabel(h.startMonth)+'. This is a proposed home-loan balance, not another loan added to your debt.</p><div class="grid-2 comparison-grid"><div class="goal-card"><p class="term-label">6-year term · '+monthLabel(CP.addMonths(h.startMonth,71))+'</p><strong>'+money(monthly6)+'</strong><span>per month for home loans</span></div><div class="goal-card selected"><p class="term-label">9-year term · '+monthLabel(CP.addMonths(h.startMonth,107))+'</p><strong>'+money(monthly9)+'</strong><span>per month for home loans</span></div></div><p class="small muted">The longer path leaves '+money(monthly6-monthly9)+' more each month before other loans and costs. Rates stay constant in this illustration.</p></section>'+
     '<section class="card"><div class="card-head"><h2>Compare optional extra repayments</h2>'+badge('Illustration')+'</div><p class="muted">Base payment uses '+h.baseYears+' years. From '+monthLabel(s.scenario.extraStartMonth)+', '+s.scenario.prepayShare+'% of the selected bonus or cumulative salary increase goes to the home loans.</p><div class="scenario-grid">'+arr.map((r,i)=>'<article class="scenario-card '+(i===0?'base':'')+'"><h3>'+esc(r.label)+'</h3><strong>'+(r.payoffMonth?monthLabel(r.payoffMonth):'Not calculated')+'</strong><p class="small muted">'+(r.interest!=null?money(r.interest)+' total interest':'Enter a principal and rate')+'</p></article>').join('')+'</div>'+note('These are <strong>home-loan calculations only</strong>, not a debt-free promise. They do not automatically spend your forecast cash. Add an extra payment to Your plan only after bills and your cash floor are funded.','warn')+'</section>'+
-    '<details class="card"><summary>Before an extra repayment</summary><p>Cover upcoming bills and keep '+money(s.liquidityFloor)+' available. Reserve goal: '+money(s.reserveTarget)+'. Use bonus and salary increases after deductions. They stay out of the cash forecast unless enabled.</p></details>';
+    '<details class="card"><summary>Before an extra repayment</summary><p>Cover upcoming bills and keep '+money(s.liquidityFloor)+' available. Reserve goal: '+money(s.reserveTarget)+'. Use bonus and salary increases after deductions. They stay out of the cash forecast unless enabled.</p></details></details>';
   }
   function settingsView() {
     const s=state.settings;
